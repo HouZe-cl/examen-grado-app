@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Seguimiento Examen de Grado 2026</title>
+  <style>
+    :root{
+      --bg:#f4f6fb; --panel:#ffffff; --text:#172033; --muted:#667085; --line:#dfe5f2;
+      --primary:#263a73; --primary2:#3b5bb5; --soft:#eef2ff; --civil:#1f6b4e; --proc:#7a4b11; --const:#3751a3; --oral:#7b2f80;
+      --ok:#16794c; --warn:#b54708; --danger:#b42318; --shadow:0 14px 35px rgba(16,24,40,.08); --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,#eef2ff 0%,var(--bg) 260px);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.45}
+    header{padding:28px 18px 16px;max-width:1240px;margin:auto}
+    .hero{display:grid;grid-template-columns:1.45fr .55fr;gap:18px;align-items:stretch}
+    .hero-card,.card{background:rgba(255,255,255,.92);border:1px solid rgba(223,229,242,.9);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .hero-card{padding:22px}
+    h1{margin:0 0 8px;font-size:clamp(1.55rem,3.2vw,2.6rem);letter-spacing:-.04em;color:var(--primary)}
+    h2{margin:0 0 14px;font-size:1.25rem;color:var(--primary)}
+    h3{margin:0 0 8px;font-size:1.02rem;color:#24304a}
+    p{margin:0 0 10px}.muted{color:var(--muted)}.small{font-size:.87rem}.tiny{font-size:.78rem}
+    .hero-stats{padding:18px;display:grid;gap:12px}.stat{padding:14px;border-radius:15px;background:var(--soft);border:1px solid #d8e0ff}.stat b{display:block;font-size:1.6rem;color:var(--primary)}
+    .tabs{position:sticky;top:0;z-index:30;backdrop-filter:blur(12px);background:rgba(244,246,251,.88);border-top:1px solid rgba(223,229,242,.75);border-bottom:1px solid rgba(223,229,242,.75)}
+    .tabwrap{max-width:1240px;margin:auto;display:flex;gap:8px;overflow:auto;padding:10px 18px}.tabbtn{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 13px;cursor:pointer;white-space:nowrap;color:#24304a;font-weight:650}.tabbtn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+    main{max-width:1240px;margin:auto;padding:18px;display:grid;gap:18px}.view{display:none}.view.active{display:block}.grid{display:grid;gap:16px}.grid-2{grid-template-columns:1fr 1fr}.grid-3{grid-template-columns:repeat(3,1fr)}.grid-4{grid-template-columns:repeat(4,1fr)}
+    .card{padding:18px}.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.spacer{flex:1}.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;border:1px solid var(--line);background:#fff;padding:5px 9px;font-size:.83rem;font-weight:650;color:#344054}.pill.Civil{border-color:rgba(31,107,78,.25);color:var(--civil);background:#f0faf5}.pill.Procesal{border-color:rgba(122,75,17,.25);color:var(--proc);background:#fff7ed}.pill.Constitucional{border-color:rgba(55,81,163,.25);color:var(--const);background:#eef2ff}.pill.Oralidad{border-color:rgba(123,47,128,.25);color:var(--oral);background:#fdf0ff}.pill.Alta{border-color:#fedf89;color:#b54708;background:#fffbeb}.pill.Crítica{border-color:#fecdca;color:#b42318;background:#fff1f3}.pill.Base{color:#344054;background:#f8fafc}.pill.done{color:var(--ok);border-color:#a6f4c5;background:#ecfdf3}
+    .progress{height:12px;background:#eef2f7;border-radius:999px;overflow:hidden}.bar{height:100%;width:0%;background:linear-gradient(90deg,var(--primary),var(--primary2));transition:.2s}.bar.civil{background:var(--civil)}.bar.proc{background:var(--proc)}.bar.const{background:var(--const)}.bar.oral{background:var(--oral)}
+    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.kpi{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px}.kpi b{display:block;font-size:1.55rem;color:var(--primary)}
+    button,.button,input,select,textarea{font:inherit}button,.button{border:0;background:var(--primary);color:#fff;border-radius:12px;padding:10px 13px;cursor:pointer;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:8px}.button.secondary,button.secondary{background:#fff;color:#24304a;border:1px solid var(--line)}button.danger{background:var(--danger)}button.ghost{background:transparent;color:var(--primary);border:1px dashed #b8c1da}
+    input,select,textarea{width:100%;border:1px solid var(--line);border-radius:12px;background:#fff;padding:10px;color:var(--text)}textarea{min-height:96px;resize:vertical}label{display:grid;gap:6px;font-weight:650;color:#344054}.formgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.formgrid .wide{grid-column:1/-1}
+    .week-header{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start}.week-list{display:grid;gap:10px}.task{display:grid;grid-template-columns:auto 1fr auto;gap:12px;padding:12px;border:1px solid var(--line);border-radius:15px;background:#fff;align-items:start}.task:hover{border-color:#b8c1da}.task input[type="checkbox"]{width:20px;height:20px;margin-top:3px}.task.done{background:#fbfefc;border-color:#a6f4c5}.task-title{font-weight:800}.task-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.task-detail{color:#667085;margin-top:4px}.task-output{margin-top:6px;padding:8px;border-left:3px solid #d8e0ff;background:#f8faff;border-radius:8px;color:#344054}
+    .subject-block{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff}.subject-head{padding:12px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);background:#fbfcff}.subject-head.Civil{border-left:5px solid var(--civil)}.subject-head.Procesal{border-left:5px solid var(--proc)}.subject-head.Constitucional{border-left:5px solid var(--const)}.subject-head.Oralidad{border-left:5px solid var(--oral)}
+    table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}th,td{text-align:left;border-bottom:1px solid var(--line);padding:10px;vertical-align:top}th{background:#f8fafc;color:#344054;font-size:.86rem}tr:last-child td{border-bottom:0}.empty{border:1px dashed #b8c1da;border-radius:16px;padding:24px;text-align:center;color:#667085;background:#fff}
+    .question{font-size:1.15rem;font-weight:800;color:#24304a;margin:10px 0;padding:16px;background:#f8faff;border:1px solid #d8e0ff;border-radius:16px}.timer{font-variant-numeric:tabular-nums;font-size:2rem;font-weight:900;color:var(--primary)}
+    .notice{padding:12px 14px;background:#fff7ed;border:1px solid #fed7aa;border-radius:14px;color:#7a4b11}.success{background:#ecfdf3;border-color:#a6f4c5;color:#16794c}.dangerbox{background:#fff1f3;border-color:#fecdca;color:#b42318}
+    .searchline{display:grid;grid-template-columns:1fr 190px 170px;gap:10px}.accordion{display:grid;gap:10px}.week-card{border:1px solid var(--line);border-radius:16px;background:#fff;padding:14px}.week-card summary{cursor:pointer;font-weight:900;color:var(--primary);display:flex;justify-content:space-between;gap:10px}.week-card summary::-webkit-details-marker{display:none}
+    .footer-note{padding:20px 0;color:#667085;text-align:center}.hide{display:none !important}
+    @media (max-width:900px){.hero,.grid-2,.grid-3,.grid-4,.kpis,.formgrid{grid-template-columns:1fr}.searchline{grid-template-columns:1fr}.week-header{grid-template-columns:1fr}.task{grid-template-columns:auto 1fr}.task>button{grid-column:2}.tabwrap{padding-left:10px}.hero-card,.card{padding:15px}}
+    @media print{.tabs,.toolbar button,.no-print{display:none!important}body{background:#fff}.card,.hero-card{box-shadow:none}.view{display:block!important}.tabwrap{display:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <section class="hero">
+      <div class="hero-card">
+        <div class="toolbar"><span class="pill Crítica">Plan robustecido</span><span class="pill Civil">Civil 50%</span><span class="pill Procesal">Procesal 30%</span><span class="pill Constitucional">Constitucional 20%</span></div>
+        <h1>Seguimiento Examen de Grado</h1>
+        <p class="muted">Inicio sugerido: <b>06 de julio de 2026</b>. Plan de 15 semanas con temario semanal, checklist, bitácora diaria, simulación oral, respaldos e indicadores.</p>
+        <div class="toolbar" style="margin-top:14px"><button onclick="goToCurrentWeek()">Ir a semana actual</button><button class="secondary" onclick="showView('semana')">Ver checklist semanal</button><button class="secondary" onclick="exportJSON()">Exportar respaldo</button></div>
+      </div>
+      <div class="hero-stats hero-card">
+        <div class="stat"><span class="muted small">Semana de plan</span><b id="heroWeek">-</b><span id="heroDates" class="small muted"></span></div>
+        <div class="stat"><span class="muted small">Avance general</span><b id="heroProgress">0%</b><div class="progress"><div id="heroBar" class="bar"></div></div></div>
+      </div>
+    </section>
+  </header>
+
+  <nav class="tabs">
+    <div class="tabwrap">
+      <button class="tabbtn active" data-view="dashboard" onclick="showView('dashboard')">Panel</button>
+      <button class="tabbtn" data-view="semana" onclick="showView('semana')">Semana</button>
+      <button class="tabbtn" data-view="temario" onclick="showView('temario')">Temario/checklist</button>
+      <button class="tabbtn" data-view="diario" onclick="showView('diario')">Registro diario</button>
+      <button class="tabbtn" data-view="oral" onclick="showView('oral')">Simulación oral</button>
+      <button class="tabbtn" data-view="backup" onclick="showView('backup')">Backup</button>
+    </div>
+  </nav>
+
+  <main>
+    <section id="dashboard" class="view active">
+      <div class="grid grid-2">
+        <div class="card">
+          <h2>Estado general</h2>
+          <div class="kpis">
+            <div class="kpi"><span class="muted small">Tareas revisadas</span><b id="kpiTasks">0/0</b></div>
+            <div class="kpi"><span class="muted small">Horas registradas</span><b id="kpiHours">0</b></div>
+            <div class="kpi"><span class="muted small">Prácticas orales</span><b id="kpiOral">0</b></div>
+            <div class="kpi"><span class="muted small">Semanas ≥ 80%</span><b id="kpiWeeks">0</b></div>
+          </div>
+          <div style="margin-top:16px" class="grid">
+            <div><div class="toolbar"><b>Civil</b><span class="spacer"></span><span id="pCivil" class="small muted"></span></div><div class="progress"><div id="barCivil" class="bar civil"></div></div></div>
+            <div><div class="toolbar"><b>Procesal</b><span class="spacer"></span><span id="pProcesal" class="small muted"></span></div><div class="progress"><div id="barProcesal" class="bar proc"></div></div></div>
+            <div><div class="toolbar"><b>Constitucional</b><span class="spacer"></span><span id="pConstitucional" class="small muted"></span></div><div class="progress"><div id="barConstitucional" class="bar const"></div></div></div>
+            <div><div class="toolbar"><b>Oralidad</b><span class="spacer"></span><span id="pOralidad" class="small muted"></span></div><div class="progress"><div id="barOralidad" class="bar oral"></div></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <h2>Enfoque de esta semana</h2>
+          <div id="currentWeekSummary"></div>
+          <hr style="border:0;border-top:1px solid var(--line);margin:16px 0">
+          <h3>Acción mínima semanal</h3>
+          <p class="muted">Marca temas, registra horas y graba al menos una respuesta oral. La app considera “semana sólida” desde 80% de checklist.</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="toolbar"><h2 style="margin:0">Mapa de semanas</h2><span class="spacer"></span><button class="secondary" onclick="window.print()">Imprimir plan</button></div>
+        <div id="weekMap" class="grid grid-3"></div>
+      </div>
+    </section>
+
+    <section id="semana" class="view">
+      <div class="card">
+        <div class="week-header">
+          <div><h2 id="weekTitle">Semana</h2><p id="weekSubtitle" class="muted"></p></div>
+          <div class="toolbar"><select id="weekSelect" onchange="renderWeek()"></select><button class="secondary" onclick="markWeekVisible(false)">Desmarcar semana</button><button onclick="markWeekVisible(true)">Marcar todo visible</button></div>
+        </div>
+        <div style="margin:16px 0"><div class="toolbar"><span id="weekProgressText" class="pill"></span><span id="weekHoursText" class="pill"></span><span class="spacer"></span><button class="ghost" onclick="toggleCustomForm()">+ Agregar tema propio</button></div><div class="progress" style="margin-top:8px"><div id="weekBar" class="bar"></div></div></div>
+        <div id="customForm" class="notice hide" style="margin-bottom:14px">
+          <div class="formgrid">
+            <label>Materia<select id="customSubject"><option>Civil</option><option>Procesal</option><option>Constitucional</option><option>Oralidad</option></select></label>
+            <label>Prioridad<select id="customPriority"><option>Alta</option><option>Crítica</option><option>Base</option></select></label>
+            <label class="wide">Tema<input id="customTitle" placeholder="Ej.: Acción de reforma de testamento" /></label>
+            <label class="wide">Resultado esperado<input id="customOutput" placeholder="Ej.: responder en 5 minutos con concepto, requisitos, legitimación y efectos" /></label>
+          </div>
+          <div class="toolbar" style="margin-top:10px"><button onclick="addCustomTask()">Guardar tema</button><button class="secondary" onclick="toggleCustomForm()">Cancelar</button></div>
+        </div>
+        <div id="weekTasks" class="grid"></div>
+      </div>
+      <div class="card">
+        <h2>Revisión semanal</h2>
+        <div class="formgrid">
+          <label>Semana evaluada<select id="reviewWeek"></select></label>
+          <label>Confianza general 1-5<input id="reviewConfidence" type="number" min="1" max="5" /></label>
+          <label>Horas objetivo semana<input id="reviewTarget" type="number" min="1" step="0.5" /></label>
+          <label>¿Semana cerrada?<select id="reviewClosed"><option value="no">No</option><option value="si">Sí</option></select></label>
+          <label class="wide">Temas débiles detectados<textarea id="reviewWeak" placeholder="Ej.: órdenes sucesorios, casación en la forma, protección vs amparo..."></textarea></label>
+          <label class="wide">Plan de corrección<textarea id="reviewAction" placeholder="Qué harás la próxima semana para corregir esos temas."></textarea></label>
+        </div>
+        <div class="toolbar" style="margin-top:12px"><button onclick="saveReview()">Guardar revisión</button><span id="reviewSaved" class="muted small"></span></div>
+      </div>
+    </section>
+
+    <section id="temario" class="view">
+      <div class="card">
+        <div class="toolbar"><h2 style="margin:0">Temario completo con checklist</h2><span class="spacer"></span><button class="secondary" onclick="collapseAllWeeks()">Contraer</button><button class="secondary" onclick="expandAllWeeks()">Expandir</button></div>
+        <div class="searchline" style="margin:12px 0"><input id="searchInput" placeholder="Buscar: sucesorio, casación, protección, sociedad conyugal..." oninput="renderTemario()"/><select id="subjectFilter" onchange="renderTemario()"><option value="">Todas las materias</option><option>Civil</option><option>Procesal</option><option>Constitucional</option><option>Oralidad</option></select><select id="statusFilter" onchange="renderTemario()"><option value="">Todo</option><option value="pending">Pendiente</option><option value="done">Revisado</option></select></div>
+        <div id="temarioList" class="accordion"></div>
+      </div>
+    </section>
+
+    <section id="diario" class="view">
+      <div class="grid grid-2">
+        <div class="card">
+          <h2>Registro diario</h2>
+          <div class="formgrid">
+            <label>Fecha<input id="logDate" type="date" /></label>
+            <label>Civil horas<input id="logCivil" type="number" min="0" step="0.25" value="0" /></label>
+            <label>Procesal horas<input id="logProcesal" type="number" min="0" step="0.25" value="0" /></label>
+            <label>Constitucional horas<input id="logConstitucional" type="number" min="0" step="0.25" value="0" /></label>
+            <label>Oralidad horas<input id="logOralidad" type="number" min="0" step="0.25" value="0" /></label>
+            <label>Confianza 1-5<input id="logConfidence" type="number" min="1" max="5" value="3" /></label>
+            <label>¿Practiqué oral?<select id="logOral"><option value="no">No</option><option value="si">Sí</option></select></label>
+            <label class="wide">Temas revisados<textarea id="logTopics" placeholder="Ej.: sucesión intestada, ordenes sucesorios, recurso de hecho..."></textarea></label>
+            <label class="wide">Observaciones<textarea id="logNotes" placeholder="Qué costó, qué quedó claro, qué repetir mañana."></textarea></label>
+          </div>
+          <div class="toolbar" style="margin-top:12px"><button onclick="saveLog()">Guardar día</button><button class="secondary" onclick="clearLogForm()">Limpiar</button><span id="logSaved" class="muted small"></span></div>
+        </div>
+        <div class="card">
+          <h2>Resumen semanal por horas</h2>
+          <div id="weeklyHours"></div>
+        </div>
+      </div>
+      <div class="card"><div class="toolbar"><h2 style="margin:0">Bitácora</h2><span class="spacer"></span><button class="secondary" onclick="exportLogsCSV()">Exportar CSV</button></div><div id="logTable"></div></div>
+    </section>
+
+    <section id="oral" class="view">
+      <div class="grid grid-2">
+        <div class="card">
+          <h2>Simulación oral</h2>
+          <p class="muted">Sortea una pregunta, responde 5 minutos, y registra tu evaluación. Las preguntas salen del temario semanal y de tus focos débiles.</p>
+          <div class="toolbar" style="margin-top:10px"><select id="oralScope"><option value="current">Semana seleccionada</option><option value="all">Todo el plan</option><option value="weak">Prioridad alta/crítica</option></select><select id="oralSubject"><option value="">Todas</option><option>Civil</option><option>Procesal</option><option>Constitucional</option></select><button onclick="drawQuestion()">Sortear pregunta</button></div>
+          <div id="questionBox" class="question">Presiona “Sortear pregunta”.</div>
+          <div class="toolbar"><span class="timer" id="timer">05:00</span><button class="secondary" onclick="startTimer(300)">Iniciar 5 min</button><button class="secondary" onclick="pauseTimer()">Pausar</button><button class="secondary" onclick="resetTimer()">Reiniciar</button></div>
+          <div class="formgrid" style="margin-top:12px">
+            <label>Nota propia 1-7<input id="attemptScore" type="number" min="1" max="7" step="0.1" /></label>
+            <label>Dominio<select id="attemptDomain"><option>Inseguro</option><option>Regular</option><option>Sólido</option><option>Excelente</option></select></label>
+            <label class="wide">Observaciones<textarea id="attemptNotes" placeholder="Dónde dudé, qué artículo/institución faltó, cómo mejorar la estructura."></textarea></label>
+          </div>
+          <div class="toolbar" style="margin-top:12px"><button onclick="saveAttempt()">Guardar intento</button><span id="attemptSaved" class="muted small"></span></div>
+        </div>
+        <div class="card">
+          <h2>Matriz de respuesta oral</h2>
+          <div class="notice"><b>Respuesta mínima:</b> concepto + naturaleza + requisitos/elementos + efectos/tramitación + distinción relevante.</div>
+          <ol>
+            <li>Definición clara, sin rodeos.</li>
+            <li>Clasificación o naturaleza jurídica.</li>
+            <li>Requisitos, elementos o presupuesto de procedencia.</li>
+            <li>Efectos, tramitación o consecuencias.</li>
+            <li>Diferencia con institución cercana.</li>
+            <li>Cierre: “en síntesis…”</li>
+          </ol>
+          <h3>Últimos intentos</h3>
+          <div id="attemptList"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="backup" class="view">
+      <div class="grid grid-2">
+        <div class="card">
+          <h2>Respaldo y traslado</h2>
+          <p class="muted">La app guarda los datos en el navegador. Exporta JSON para respaldar o mover el progreso a otro equipo.</p>
+          <div class="toolbar"><button onclick="exportJSON()">Descargar JSON</button><button class="secondary" onclick="exportLogsCSV()">Descargar CSV bitácora</button><button class="secondary" onclick="exportTasksCSV()">Descargar CSV temario</button></div>
+          <hr style="border:0;border-top:1px solid var(--line);margin:16px 0">
+          <label>Importar respaldo JSON<input type="file" id="importFile" accept="application/json" onchange="importJSON(event)" /></label>
+          <div class="notice" style="margin-top:12px">Recomendación: exportar respaldo todos los domingos después de la revisión semanal.</div>
+        </div>
+        <div class="card">
+          <h2>Configuración</h2>
+          <div class="formgrid">
+            <label>Fecha de inicio<input type="date" id="settingStart" /></label>
+            <label>Horas objetivo semanal<input type="number" id="settingHours" min="1" step="0.5" /></label>
+            <label class="wide">Nombre del plan<input id="settingName" /></label>
+          </div>
+          <div class="toolbar" style="margin-top:12px"><button onclick="saveSettings()">Guardar configuración</button><button class="danger" onclick="resetAll()">Borrar todo</button></div>
+          <p class="muted small" style="margin-top:10px">Cambiar la fecha de inicio recalcula los rangos semanales, pero conserva tus checks y registros.</p>
+        </div>
+      </div>
+      <p class="footer-note">Webapp estática. Puedes subir este index.html a GitHub Pages, Netlify, Cloudflare Pages o Vercel.</p>
+    </section>
+  </main>
+
+<script>
+const PLAN = [
+  {week:1, phase:'Base general', focus:'Ordenar conceptos base y activar rutina', tasks:[
+    t('Civil','Crítica','Teoría general de la ley','Constitucionalización del Derecho Civil; autonomía de la voluntad; responsabilidad; enriquecimiento sin causa; buena fe.','Explicar cada principio con concepto, función y ejemplo breve.'),
+    t('Civil','Alta','La ley e interpretación','Concepto, características, efectos en el tiempo y espacio; leyes prohibitivas, imperativas y permisivas; métodos y reglas de interpretación.','Construir una ficha con reglas de interpretación y ejemplos.'),
+    t('Civil','Base','Personas naturales y jurídicas','Principio y fin de existencia; atributos; clasificación y atributos de personas jurídicas.','Responder en 5 minutos: persona, atributos y personalidad jurídica.'),
+    t('Procesal','Alta','Jurisdicción','Concepto, características, límites, facultades conservadoras, disciplinarias y económicas; equivalentes jurisdiccionales.','Diferenciar jurisdicción de competencia y explicar equivalentes.'),
+    t('Procesal','Alta','Competencia','Concepto, clasificaciones, reglas generales, factores absolutos/relativos y prórroga.','Hacer cuadro: absoluta vs relativa; reglas generales.'),
+    t('Constitucional','Alta','Bases de la institucionalidad I','Persona humana, familia, grupos intermedios, Estado; primacía de la persona, subsidiariedad y servicialidad.','Responder con estructura normativa y principios.'),
+    t('Constitucional','Alta','Artículo 5 inciso 2 y soberanía','Limitaciones a la soberanía, DD.HH., tratados internacionales y efectos de sentencias CIDH.','Preparar respuesta de 4 minutos sobre art. 5 inc. 2.'),
+    t('Oralidad','Base','Primera medición oral','Grabar tres respuestas: una civil, una procesal, una constitucional.','Guardar nota propia y tema más débil.')]
+  },
+  {week:2, phase:'Base general', focus:'Negocio jurídico y teoría del proceso', tasks:[
+    t('Civil','Crítica','Negocio jurídico: concepto y clasificaciones','Teoría del negocio jurídico, efectos y principales clasificaciones.','Explicar acto/negocio jurídico y clasificaciones más preguntables.'),
+    t('Civil','Crítica','Estructura del negocio jurídico','Elementos; requisitos de existencia y validez; manifestación de voluntad; consentimiento.','Ficha: existencia vs validez, con sanción asociada.'),
+    t('Civil','Alta','Vicios del consentimiento','Error, fuerza, dolo y lesión; requisitos y efectos.','Comparar error, fuerza y dolo en cuadro.'),
+    t('Civil','Alta','Objeto, causa y formalidades','Objeto lícito, causa lícita, formalidades de existencia, validez, prueba y publicidad.','Responder: requisitos del acto jurídico y sanciones.'),
+    t('Procesal','Alta','Proceso, acción y pretensión','Concepto, elementos del proceso, presupuestos procesales, debido proceso, acción y pretensión.','Explicar relación entre acción, pretensión y demanda.'),
+    t('Procesal','Alta','Reacción y excepciones','Allanamiento, excepciones y defensas; clasificación de excepciones.','Distinguir excepción dilatoria, perentoria, mixta y anómala.'),
+    t('Procesal','Base','Partes y comparecencia','Capacidad, pluralidad, terceros, patrocinio y mandato judicial.','Hacer mapa de partes, litisconsorcio y terceros.'),
+    t('Constitucional','Alta','Supremacía, legalidad y nulidad de derecho público','Bases del Estado de Derecho, supremacía constitucional, principio de legalidad y NDP.','Responder: legalidad vs juridicidad y efecto de la NDP.'),
+    t('Oralidad','Base','Entrenamiento de definiciones','Practicar respuestas de 90 segundos con concepto + clasificación + ejemplo.','Registrar 5 temas respondidos sin apuntes.')]
+  },
+  {week:3, phase:'Base general', focus:'Ineficacia civil y herramientas procesales', tasks:[
+    t('Civil','Crítica','Representación','Concepto, teorías y requisitos de la representación en negocios jurídicos.','Diferenciar representación, mandato y agencia oficiosa.'),
+    t('Civil','Crítica','Inexistencia, nulidad e inoponibilidad','Inexistencia; nulidad absoluta y relativa; inoponibilidad.','Cuadro comparativo: causal, legitimación, saneamiento, prescripción, efectos.'),
+    t('Procesal','Alta','Actuaciones procesales','Concepto, requisitos de validez; con conocimiento, con citación y con audiencia.','Explicar cuándo una actuación es válida y cómo se autoriza.'),
+    t('Procesal','Alta','Notificaciones','Concepto, requisitos comunes y clases de notificación.','Armar respuesta completa sobre emplazamiento y notificación de demanda.'),
+    t('Procesal','Alta','Resoluciones judiciales y cosa juzgada','Clasificación, requisitos, efectos, desasimiento, cosa juzgada acción/excepción.','Diferenciar sentencia definitiva, interlocutoria, auto y decreto.'),
+    t('Procesal','Base','Medidas prejudiciales y precautorias','Medidas cautelares, prejudiciales y prejudiciales precautorias.','Explicar finalidad y momento procesal de cada una.'),
+    t('Constitucional','Crítica','Derechos fundamentales: naturaleza y garantías','Dignidad humana, derechos fundamentales, sociales y de tercera generación; diferencia derecho/garantía.','Responder: qué es un derecho fundamental y qué es una garantía.'),
+    t('Constitucional','Alta','Reserva legal, esencia y ponderación','Art. 19 N°26, jerarquía, colisión y ponderación de derechos.','Preparar un ejemplo de conflicto de derechos y cómo resolverlo.'),
+    t('Oralidad','Base','Simulación corta','Responder una cédula mixta: nulidad civil + notificaciones + derechos fundamentales.','Evaluar claridad, orden y memoria.')]
+  },
+  {week:4, phase:'Núcleo civil y ordinario', focus:'Derechos reales y juicio ordinario I', tasks:[
+    t('Civil','Alta','Cosas, bienes y derechos reales','Conceptos, clasificaciones, derecho real y sus características.','Distinguir cosa/bien, derecho real/personal.'),
+    t('Civil','Alta','Dominio y posesión','Dominio: concepto, características, atributos. Posesión: concepto, elementos, clasificación; posesión vs mera tenencia.','Responder dominio y posesión con diferencias prácticas.'),
+    t('Civil','Alta','Modos de adquirir','Modos, sistema chileno de título y modo; tradición; prescripción adquisitiva; Registro Conservatorio.','Explicar tradición de inmuebles y función del CBR.'),
+    t('Civil','Base','Acción reivindicatoria','Esquema de acciones protectoras; reivindicatoria: concepto, requisitos y efectos.','Armar respuesta oral de 5 minutos.'),
+    t('Procesal','Crítica','Juicio ordinario: estructura y demanda','Características, aplicación, estructura; demanda y requisitos.','Responder de inicio a fin la etapa de discusión.'),
+    t('Procesal','Crítica','Emplazamiento y defensas','Emplazamiento; excepciones dilatorias; contestación expresa y ficta; reconvención.','Explicar la importancia del emplazamiento y nulidad por falta de emplazamiento.'),
+    t('Procesal','Alta','Réplica y dúplica','Tramitación posterior a contestación y reconvención; fijación de discusión.','Hacer línea de tiempo del juicio ordinario.'),
+    t('Constitucional','Alta','Derechos fundamentales I','Vida, integridad, igualdad ante la ley, privacidad, honra y debido proceso.','Preparar ficha con titular, contenido y garantía.'),
+    t('Oralidad','Base','Simulación juicio ordinario I','Responder demanda-emplezamiento-defensa en 6 minutos.','Detectar lagunas procesales.')]
+  },
+  {week:5, phase:'Núcleo civil y ordinario', focus:'Obligaciones y prueba en juicio ordinario', tasks:[
+    t('Civil','Crítica','Obligaciones: concepto, estructura y fuentes','Concepto, sujeto, objeto, vínculo; fuentes; clasificaciones generales.','Explicar obligación y fuentes sin leer.'),
+    t('Civil','Alta','Pluralidad de sujetos y modalidades','Obligaciones con pluralidad de sujetos; solidarias, simplemente conjuntas, indivisibles; condición, plazo y modo.','Cuadro: solidaridad vs indivisibilidad.'),
+    t('Civil','Alta','Dar, hacer y no hacer','Obligaciones de dar, hacer y no hacer; importancia para cumplimiento e incumplimiento.','Relacionar con juicio ejecutivo cuando corresponda.'),
+    t('Procesal','Crítica','Prueba en juicio ordinario','Recepción de la causa a prueba, término probatorio, clases y medios de prueba.','Línea de tiempo desde resolución que recibe a prueba hasta observaciones.'),
+    t('Procesal','Alta','Citación para oír sentencia y sentencia','Citación para oír sentencia, periodo de sentencia y efectos.','Responder qué ocurre al quedar la causa en estado de fallo.'),
+    t('Constitucional','Alta','Derechos fundamentales II','Propiedad, libertad económica, libertad de enseñanza/trabajo y garantías procesales.','Conectar propiedad con protección e igualdad ante cargas públicas.'),
+    t('Constitucional','Base','Derechos sociales y tercera generación','Concepto, exigibilidad y diferencia con garantías clásicas.','Explicar con lenguaje constitucional, no político.'),
+    t('Oralidad','Base','Prueba + obligaciones','Simular pregunta: obligación, incumplimiento y prueba en juicio ordinario.','Grabar respuesta y anotar vacíos.')]
+  },
+  {week:6, phase:'Núcleo civil y ordinario', focus:'Efectos de obligaciones, incidentes y nulidad', tasks:[
+    t('Civil','Crítica','Efectos de las obligaciones','Indemnización de perjuicios; avaluación convencional, legal y judicial.','Responder requisitos de indemnización y tipos de perjuicios.'),
+    t('Civil','Alta','Derechos auxiliares del acreedor','Medidas conservativas, acción oblicua, pauliana y beneficio de separación, según corresponda.','Explicar función protectora del crédito.'),
+    t('Civil','Alta','Extinción de obligaciones','Resciliación, pago, prescripción extintiva y derecho de garantía general.','Comparar pago, novación si la agregas, y prescripción.'),
+    t('Procesal','Alta','Incidentes','Concepto, clasificación, incidentes ordinarios, prueba y resolución.','Responder tramitación del incidente ordinario.'),
+    t('Procesal','Alta','Procedimiento sumario','Características, aplicación, audiencia, prueba, aceptación provisional y sustitución.','Cuadro ordinario vs sumario.'),
+    t('Procesal','Crítica','Nulidad procesal','Concepto, fundamentos, tipos, relación con casación, incidente ordinario y rescisión por falta de emplazamiento.','Responder nulidad procesal con principios: trascendencia, convalidación, etc.'),
+    t('Constitucional','Alta','Colisión de derechos','Reserva legal, esencia y ponderación aplicadas a casos.','Preparar caso de protección por colisión de propiedad/honra/libertad.'),
+    t('Oralidad','Base','Simulación nulidades','Responder nulidad civil vs nulidad procesal: diferencias esenciales.','Anotar confusiones.')]
+  },
+  {week:7, phase:'Núcleo civil y recursos', focus:'Contratos y recursos civiles I', tasks:[
+    t('Civil','Alta','Teoría general del contrato','Concepto, clasificaciones, autonomía privada y nuevas formas contractuales.','Explicar fuerza obligatoria y límites modernos.'),
+    t('Civil','Alta','Efectos e interpretación contractual','Fuerza obligatoria, efecto relativo e interpretación de contratos.','Responder efecto relativo y excepciones aparentes.'),
+    t('Civil','Alta','Promesa de celebrar contrato','Concepto, requisitos, efectos y problemas típicos.','Responder promesa como contrato preparatorio.'),
+    t('Procesal','Crítica','Matriz general de recursos','Concepto, clasificaciones, resoluciones impugnables, tribunal a quo/ad quem, efectos.','Crear matriz reusable para todo recurso.'),
+    t('Procesal','Crítica','Apelación','Concepto, interposición, resoluciones impugnables, tramitación, fallo y efectos.','Responder apelación en 6 minutos.'),
+    t('Procesal','Alta','Recurso de hecho','Concepto, procedencia verdadero/falso, tramitación y fallo.','Distinguir hecho verdadero y falso.'),
+    t('Constitucional','Crítica','Recurso de protección I','Naturaleza, finalidad, legitimación, acto/omisión ilegal o arbitrario, plazo y tribunal.','Responder protección con estructura de admisibilidad.'),
+    t('Constitucional','Alta','Derechos protegidos por protección','Identificar derechos protegidos y problemas frecuentes.','Hacer listado de numerales protegidos y exclusiones.'),
+    t('Oralidad','Alta','Simulación recursos','Responder apelación + protección comparando naturaleza de ambos.','Guardar intento con nota.')]
+  },
+  {week:8, phase:'Contratos, responsabilidad y recursos', focus:'Contratos particulares, responsabilidad y casación', tasks:[
+    t('Civil','Alta','Compraventa','Concepto, características, elementos, obligaciones de las partes, saneamiento.','Responder compraventa completa en 7 minutos.'),
+    t('Civil','Alta','Mandato e hipoteca','Mandato: concepto, partes, obligaciones, terminación. Hipoteca: concepto, características y efectos.','Cuadro: mandato vs representación; hipoteca como caución real.'),
+    t('Civil','Alta','Responsabilidad extracontractual I','Elementos: hecho imputable, capacidad, hecho libre, culpa y deber de cuidado.','Explicar responsabilidad por hecho propio.'),
+    t('Civil','Base','Daño y causalidad','Daño, daño moral, reparación, causalidad, pluralidad de responsables y culpa de la víctima.','Responder diferencias contractual/extracontractual.'),
+    t('Procesal','Crítica','Casación en la forma','Concepto, causales, preparación, interposición, tramitación, fallo y efectos.','Responder cuándo procede y cómo se prepara.'),
+    t('Procesal','Crítica','Casación en el fondo','Concepto, errores de derecho, influencia sustancial, interposición y fallo.','Comparar forma vs fondo.'),
+    t('Constitucional','Crítica','Recurso de amparo','Procedencia, libertad personal y seguridad individual, tribunal, tramitación y efectos.','Comparar amparo y protección.'),
+    t('Oralidad','Alta','Simulación casación/amparo','Responder una pregunta civil y una de recursos constitucionales cronometrada.','Registrar puntos de duda.')]
+  },
+  {week:9, phase:'Prioridad civil débil', focus:'Familia I y ejecutivo I', tasks:[
+    t('Civil','Crítica','Matrimonio','Concepto, elementos, régimen jurídico; requisitos de existencia y validez.','Responder matrimonio y causales de invalidez.'),
+    t('Civil','Crítica','Disolución del vínculo matrimonial','Muerte real/presunta, nulidad, divorcio y compensación económica.','Cuadro nulidad vs divorcio; explicar compensación económica.'),
+    t('Civil','Alta','Relaciones personales entre cónyuges','Efectos personales del matrimonio y deberes.','Conectar con estatuto familiar y protección constitucional.'),
+    t('Procesal','Crítica','Acción ejecutiva y títulos','Requisitos de procedencia, títulos ejecutivos y exigibilidad.','Responder cuándo una obligación es ejecutiva.'),
+    t('Procesal','Crítica','Demanda ejecutiva y mandamiento','Estructura, demanda, mandamiento de ejecución y embargo.','Hacer línea de tiempo del cuaderno ejecutivo.'),
+    t('Procesal','Alta','Embargo inicial','Concepto, finalidad y efectos principales del embargo.','Explicar embargo como actuación clave del apremio.'),
+    t('Constitucional','Alta','Inaplicabilidad e inconstitucionalidad','Recurso de inaplicabilidad, acción de inconstitucionalidad, control concreto/abstracto y efectos.','Comparar ambos controles del TC.'),
+    t('Constitucional','Base','Amparo económico y otras tutelas','Amparo económico, indemnización art. 19 N°7 letra i), recurso por nacionalidad.','Ubicar cada acción en su finalidad.'),
+    t('Oralidad','Alta','Simulación Familia I','Responder matrimonio + divorcio + compensación económica.','Grabar y revisar estructura.')]
+  },
+  {week:10, phase:'Prioridad civil débil', focus:'Familia II y ejecutivo II', tasks:[
+    t('Civil','Crítica','Régimen de bienes del matrimonio','Concepto, clasificación y lógica general de los regímenes.','Explicar por qué el régimen patrimonial importa.'),
+    t('Civil','Crítica','Sociedad conyugal','Haber social, haberes propios, administración, disolución y liquidación a nivel de examen.','Preparar mapa de activos/pasivos.'),
+    t('Civil','Alta','Bienes reservados de la mujer casada','Concepto, requisitos, administración y prueba.','Responder como excepción relevante dentro de sociedad conyugal.'),
+    t('Civil','Alta','Separación, participación y bienes familiares','Separación de bienes, participación en gananciales y bienes familiares.','Cuadro comparativo de regímenes + bienes familiares.'),
+    t('Procesal','Crítica','Excepciones en juicio ejecutivo','Oposición, excepciones, diferencias con juicio ordinario, plazo y tramitación.','Memorizar y explicar lógica de excepciones ejecutivas.'),
+    t('Procesal','Alta','Prueba, sentencia y cosa juzgada ejecutiva','Término probatorio, clases de sentencia, cosa juzgada, reserva de acciones/excepciones, renovación.','Responder juicio ejecutivo hasta sentencia.'),
+    t('Constitucional','Alta','Tribunal Constitucional I','Justicia constitucional, legitimidad, integración, nombramiento y atribuciones generales.','Responder rol del TC en Estado democrático.'),
+    t('Constitucional','Alta','Control de constitucionalidad','Controles preventivos obligatorios/eventuales y control de actos de la Administración.','Explicar control ex ante/ex post.'),
+    t('Oralidad','Alta','Simulación sociedad conyugal + ejecutivo','Responder 2 preguntas separadas, 5 minutos cada una.','Registrar nota y vacíos.')]
+  },
+  {week:11, phase:'Prioridad civil débil', focus:'Familia III y ejecutivo III', tasks:[
+    t('Civil','Crítica','Filiación: principios y clasificación','Concepto, fundamentos, principios del régimen vigente y clasificación.','Responder filiación con enfoque de igualdad y verdad biológica/social.'),
+    t('Civil','Crítica','Determinación y acciones de filiación','Determinación; acciones de reclamación e impugnación.','Cuadro: acción, legitimado, objetivo, efectos.'),
+    t('Civil','Alta','Efectos de la filiación','Autoridad paterna, patria potestad y derecho de alimentos.','Responder alimentos con fuente, titulares y criterios generales.'),
+    t('Procesal','Alta','Cuaderno de apremio','Embargo, administración de bienes embargados, realización de bienes.','Explicar diferencia entre cuaderno ejecutivo y apremio.'),
+    t('Procesal','Alta','Remate, liquidación y pago','Remate de muebles/inmuebles, formalidades, liquidación de crédito y pago.','Responder etapas de realización y pago.'),
+    t('Procesal','Alta','Tercerías','Clasificación y tramitación general.','Distinguir dominio, posesión, prelación y pago.'),
+    t('Constitucional','Base','Gobierno y Congreso','Presidente como colegislador, RR.II., potestad reglamentaria, responsabilidad; Congreso, Cámara y Senado.','Hacer ficha de atribuciones exclusivas.'),
+    t('Oralidad','Alta','Simulación Familia III','Responder filiación + alimentos + patria potestad.','Marcar temas que requieren segunda vuelta.')]
+  },
+  {week:12, phase:'Sucesorio e integración', focus:'Sucesorio I y procesal penal base', tasks:[
+    t('Civil','Crítica','Sucesión por causa de muerte','Concepto, características como modo de adquirir y requisitos para suceder.','Responder sucesión como modo de adquirir.'),
+    t('Civil','Crítica','Herederos y legatarios','Asignatarios a título universal y singular; herederos universales, de cuota, remanente; legados de género/especie.','Cuadro heredero vs legatario.'),
+    t('Civil','Crítica','Apertura, delación y transmisión','Apertura: oportunidad, lugar y ley; delación; derecho de transmisión.','Explicar secuencia muerte-apertura-delación-aceptación.'),
+    t('Civil','Alta','Derecho real de herencia','Concepto, características, posesión de la herencia, disposición de bienes, tradición y prescripción.','Responder derecho real de herencia completo.'),
+    t('Procesal','Base','Procesal penal: investigación y cautelares','Inicio de investigación, citación, detención, prisión preventiva, cautelares art. 155 y reales.','Responder mapa de etapa inicial.'),
+    t('Procesal','Base','Cierre, salidas alternativas e intermedia','Conclusión de investigación, suspensión condicional, acuerdos reparatorios y preparación de juicio oral.','Explicar salidas alternativas y etapa intermedia.'),
+    t('Constitucional','Alta','Comparativo de tutelas','Protección, amparo, inaplicabilidad, inconstitucionalidad y amparo económico.','Hacer cuadro: finalidad, tribunal, legitimación, efectos.'),
+    t('Oralidad','Crítica','Simulación Sucesorio I','Responder sucesión, apertura, delación, transmisión, herederos/legatarios.','Grabar respuesta de 8 minutos.')]
+  },
+  {week:13, phase:'Sucesorio e integración', focus:'Sucesorio II y procesal penal', tasks:[
+    t('Civil','Crítica','Sucesión intestada','Concepto, derecho de representación, herederos abintestato y órdenes sucesorios.','Memorizar y explicar órdenes sucesorios.'),
+    t('Civil','Alta','Sucesión mixta','Sucesión en parte testada y parte intestada.','Responder cómo coexisten testamento e intestada.'),
+    t('Civil','Crítica','Testamento','Concepto, características, requisitos, testamento solemne abierto/cerrado y revocación.','Cuadro abierto vs cerrado.'),
+    t('Procesal','Base','Juicio oral penal','Principios, prueba, apertura, desarrollo, alegatos, clausura y sentencia.','Responder estructura de juicio oral penal.'),
+    t('Procesal','Alta','Recursos penales','Reglas generales, reposición, apelación y nulidad penal.','Comparar nulidad penal con casación civil.'),
+    t('Procesal','Base','Procedimientos especiales penales','Abreviado, simplificado y monitorio.','Hacer ficha de procedencia y efectos básicos.'),
+    t('Constitucional','Base','Órganos y funciones constitucionales','FF.AA., Orden y Seguridad, administración interior, Banco Central y reforma constitucional.','Preparar respuesta panorámica sin profundizar en política.'),
+    t('Oralidad','Crítica','Simulación Sucesorio II','Responder intestada + testamento + orden sucesorio.','Evaluar precisión y memoria.')]
+  },
+  {week:14, phase:'Segunda vuelta', focus:'Sucesorio III e integración fuerte', tasks:[
+    t('Civil','Crítica','Derechos que concurren en sucesión','Acrecimiento, sustitución, representación, transmisión y forma de concurrencia.','Cuadro comparativo con ejemplo.'),
+    t('Civil','Crítica','Asignaciones forzosas y acervos','Concepto, enumeración, análisis y acervos.','Responder legitimarios, mejoras, cuarta libre y acervos.'),
+    t('Civil','Alta','Pago de deudas hereditarias','Responsabilidad de herederos y división de deudas hereditarias.','Explicar pasivo hereditario y responsabilidad.'),
+    t('Civil','Alta','Repaso familia + sucesorio','Conectar matrimonio, régimen patrimonial, filiación y sucesión.','Responder caso integrado familia/sucesión.'),
+    t('Procesal','Crítica','Integración ordinario-ejecutivo-recursos','Demanda, emplazamiento, prueba, sentencia, apelación, casación; ejecutivo completo.','Simular cédula procesal completa.'),
+    t('Constitucional','Crítica','Integración derechos y acciones','Derechos fundamentales + protección + amparo + TC.','Simular cédula constitucional completa.'),
+    t('Oralidad','Crítica','Simulación formal 1','Tres preguntas: Civil, Procesal, Constitucional, con tiempo real.','Registrar nota, vacíos y plan de corrección.')]
+  },
+  {week:15, phase:'Simulación final', focus:'Examen completo y corrección fina', tasks:[
+    t('Civil','Crítica','Simulación Civil completa','Cédula civil con énfasis en familia, sucesorio y negocio jurídico.','Responder 20-25 minutos con estructura de examen.'),
+    t('Civil','Alta','Segunda vuelta Civil débil','Revisar los 10 temas civiles con menor seguridad.','Cerrar fichas de miedo.'),
+    t('Procesal','Crítica','Simulación Procesal completa','Juicio ordinario, ejecutivo, recursos y nociones penales.','Responder 20 minutos con matriz de recursos.'),
+    t('Constitucional','Crítica','Simulación Constitucional completa','Bases, derechos fundamentales, protección, amparo, TC e inaplicabilidad.','Responder 15-20 minutos.'),
+    t('Oralidad','Crítica','Simulación formal 2','Examen completo grabado, sin apuntes, con pauta de autoevaluación.','Detectar solo correcciones finales.'),
+    t('Oralidad','Alta','Plan de últimos 7 días','Diseñar repaso liviano: fichas, preguntas frecuentes y descanso.','No abrir materias nuevas salvo vacíos críticos.')]
+  }
+];
+function t(subject, priority, title, detail, output){ return {subject, priority, title, detail, output}; }
+function makeIds(){ PLAN.forEach(w=>w.tasks.forEach((task,i)=>task.id=`w${w.week}-${slug(task.subject)}-${i}`)); }
+function slug(s){return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}
+makeIds();
+const KEY='grado_examen_2026_v2';
+const defaultState={checked:{},logs:[],reviews:{},attempts:[],customTasks:[],settings:{startDate:'2026-07-06',hoursTarget:15,planName:'Examen de Grado Octubre 2026'}};
+let state=load(); let selectedWeek=getCurrentWeek(); let currentQuestion=null; let timerId=null; let remaining=300;
+function load(){try{const raw=localStorage.getItem(KEY); if(!raw) return structuredClone(defaultState); return merge(structuredClone(defaultState),JSON.parse(raw));}catch(e){return structuredClone(defaultState)}}
+function merge(a,b){for(const k in b){if(b[k] && typeof b[k]==='object' && !Array.isArray(b[k])) a[k]=merge(a[k]||{},b[k]); else a[k]=b[k]}return a}
+function save(){localStorage.setItem(KEY,JSON.stringify(state)); renderAll();}
+function allTasks(){return PLAN.flatMap(w=>w.tasks.map(task=>({...task,week:w.week,phase:w.phase,focus:w.focus,builtin:true}))).concat(state.customTasks||[])}
+function weekTasks(week){return allTasks().filter(x=>x.week==week)}
+function fmtDate(d){return new Intl.DateTimeFormat('es-CL',{day:'2-digit',month:'short'}).format(d)}
+function iso(d){return d.toISOString().slice(0,10)}
+function addDays(d,n){const x=new Date(d+'T00:00:00');x.setDate(x.getDate()+n);return x}
+function weekRange(week){const start=addDays(state.settings.startDate,(week-1)*7);const end=addDays(state.settings.startDate,(week-1)*7+6);return `${fmtDate(start)} – ${fmtDate(end)}`}
+function getCurrentWeek(){const start=new Date((state?.settings?.startDate||'2026-07-06')+'T00:00:00');const now=new Date();const diff=Math.floor((new Date(now.getFullYear(),now.getMonth(),now.getDate())-start)/86400000); if(diff<0) return 1; return Math.min(15,Math.floor(diff/7)+1)}
+function pct(done,total){return total?Math.round(done*100/total):0}
+function statsFor(tasks){const total=tasks.length;const done=tasks.filter(x=>state.checked[x.id]).length;return {done,total,p:pct(done,total)}}
+function subjectStats(subject){return statsFor(allTasks().filter(x=>x.subject==subject))}
+function hoursInWeek(week){const start=addDays(state.settings.startDate,(week-1)*7);const end=addDays(state.settings.startDate,(week-1)*7+7);return state.logs.filter(l=>{const d=new Date(l.date+'T00:00:00');return d>=start&&d<end}).reduce((s,l)=>s+Number(l.Civil||0)+Number(l.Procesal||0)+Number(l.Constitucional||0)+Number(l.Oralidad||0),0)}
+function totalHours(){return state.logs.reduce((s,l)=>s+Number(l.Civil||0)+Number(l.Procesal||0)+Number(l.Constitucional||0)+Number(l.Oralidad||0),0)}
+function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tabbtn').forEach(b=>b.classList.toggle('active',b.dataset.view==id)); if(id==='temario') renderTemario(); if(id==='diario') renderLogs(); if(id==='oral') renderAttempts(); window.scrollTo({top:0,behavior:'smooth'});}
+function goToCurrentWeek(){selectedWeek=getCurrentWeek(); document.getElementById('weekSelect').value=selectedWeek; showView('semana'); renderWeek();}
+function renderAll(){renderHeader();renderDashboard();renderWeekSelectors();renderWeek();renderTemario();renderLogs();renderAttempts();renderSettings();}
+function renderHeader(){const s=statsFor(allTasks());document.getElementById('heroWeek').textContent=`${getCurrentWeek()} / 15`;document.getElementById('heroDates').textContent=weekRange(getCurrentWeek());document.getElementById('heroProgress').textContent=s.p+'%';document.getElementById('heroBar').style.width=s.p+'%';}
+function renderDashboard(){const tasks=allTasks(), s=statsFor(tasks);document.getElementById('kpiTasks').textContent=`${s.done}/${s.total}`;document.getElementById('kpiHours').textContent=totalHours().toFixed(1);document.getElementById('kpiOral').textContent=state.attempts.length;let solid=0;PLAN.forEach(w=>{if(statsFor(weekTasks(w.week)).p>=80) solid++});document.getElementById('kpiWeeks').textContent=solid;['Civil','Procesal','Constitucional','Oralidad'].forEach(sub=>{const ss=subjectStats(sub);const id=sub;document.getElementById('p'+id).textContent=`${ss.done}/${ss.total} · ${ss.p}%`;document.getElementById('bar'+id).style.width=ss.p+'%';});const wk=PLAN[getCurrentWeek()-1];const ws=statsFor(weekTasks(wk.week));document.getElementById('currentWeekSummary').innerHTML=`<p><span class="pill">Semana ${wk.week}</span> <span class="pill ${ws.p>=80?'done':'Alta'}">${ws.p}%</span></p><h3>${wk.focus}</h3><p class="muted">${wk.phase} · ${weekRange(wk.week)}</p><div class="progress"><div class="bar" style="width:${ws.p}%"></div></div><div class="toolbar" style="margin-top:10px"><button onclick="selectedWeek=${wk.week};document.getElementById('weekSelect').value=${wk.week};showView('semana');renderWeek()">Abrir semana</button></div>`;document.getElementById('weekMap').innerHTML=PLAN.map(w=>{const st=statsFor(weekTasks(w.week)); return `<div class="week-card"><div class="toolbar"><span class="pill">Semana ${w.week}</span><span class="spacer"></span><span class="pill ${st.p>=80?'done':'Base'}">${st.p}%</span></div><h3>${w.focus}</h3><p class="muted small">${weekRange(w.week)} · ${w.phase}</p><div class="progress"><div class="bar" style="width:${st.p}%"></div></div></div>`}).join('')}
+function renderWeekSelectors(){['weekSelect','reviewWeek'].forEach(id=>{const el=document.getElementById(id); if(!el) return; const val=el.value||selectedWeek; el.innerHTML=PLAN.map(w=>`<option value="${w.week}">Semana ${w.week} · ${weekRange(w.week)}</option>`).join(''); el.value=val;});}
+function renderWeek(){const sel=document.getElementById('weekSelect'); if(sel) selectedWeek=Number(sel.value||selectedWeek); const w=PLAN[selectedWeek-1]; const tasks=weekTasks(selectedWeek); const st=statsFor(tasks);document.getElementById('weekTitle').textContent=`Semana ${w.week}: ${w.focus}`;document.getElementById('weekSubtitle').textContent=`${weekRange(w.week)} · ${w.phase}`;document.getElementById('weekProgressText').textContent=`${st.done}/${st.total} temas · ${st.p}%`;document.getElementById('weekHoursText').textContent=`${hoursInWeek(w.week).toFixed(1)} h registradas`;document.getElementById('weekBar').style.width=st.p+'%';const groups={Civil:[],Procesal:[],Constitucional:[],Oralidad:[]};tasks.forEach(x=>groups[x.subject]?.push(x));document.getElementById('weekTasks').innerHTML=Object.entries(groups).filter(([s,arr])=>arr.length).map(([subject,arr])=>{const ss=statsFor(arr);return `<div class="subject-block"><div class="subject-head ${subject}"><b>${subject}</b><span class="pill ${subject}">${ss.done}/${ss.total} · ${ss.p}%</span></div><div class="week-list" style="padding:12px">${arr.map(taskHTML).join('')}</div></div>`}).join(''); const rev=state.reviews[selectedWeek]||{};document.getElementById('reviewWeek').value=selectedWeek;document.getElementById('reviewConfidence').value=rev.confidence||'';document.getElementById('reviewTarget').value=rev.target||state.settings.hoursTarget;document.getElementById('reviewClosed').value=rev.closed||'no';document.getElementById('reviewWeak').value=rev.weak||'';document.getElementById('reviewAction').value=rev.action||'';}
+function taskHTML(task){const done=!!state.checked[task.id]; return `<div class="task ${done?'done':''}" data-task="${task.id}"><input type="checkbox" ${done?'checked':''} onchange="toggleTask('${task.id}',this.checked)"><div><div class="task-title">${esc(task.title)}</div><div class="task-detail">${esc(task.detail)}</div><div class="task-output"><b>Resultado esperado:</b> ${esc(task.output)}</div><div class="task-meta"><span class="pill ${task.subject}">${task.subject}</span><span class="pill ${task.priority}">${task.priority}</span><span class="pill">Semana ${task.week}</span></div></div>${task.builtin?'':`<button class="secondary" onclick="deleteCustomTask('${task.id}')">Eliminar</button>`}</div>`}
+function toggleTask(id,val){state.checked[id]=!!val; save();}
+function markWeekVisible(val){weekTasks(selectedWeek).forEach(x=>state.checked[x.id]=val); save();}
+function toggleCustomForm(){document.getElementById('customForm').classList.toggle('hide')}
+function addCustomTask(){const title=document.getElementById('customTitle').value.trim(); if(!title) return alert('Falta el tema.'); const subject=document.getElementById('customSubject').value; const priority=document.getElementById('customPriority').value; const output=document.getElementById('customOutput').value.trim()||'Revisar y responder oralmente con concepto, requisitos y efectos.'; const id='custom-'+Date.now(); state.customTasks.push({id,week:selectedWeek,subject,priority,title,detail:'Tema agregado por Felipe para reforzar el plan.',output,builtin:false}); document.getElementById('customTitle').value=''; document.getElementById('customOutput').value=''; toggleCustomForm(); save();}
+function deleteCustomTask(id){if(confirm('¿Eliminar este tema agregado?')){state.customTasks=state.customTasks.filter(x=>x.id!==id); delete state.checked[id]; save();}}
+function renderTemario(){const q=(document.getElementById('searchInput')?.value||'').toLowerCase();const sub=document.getElementById('subjectFilter')?.value||'';const stat=document.getElementById('statusFilter')?.value||'';let html='';PLAN.forEach(w=>{let tasks=weekTasks(w.week).filter(x=>{const hay=(x.title+' '+x.detail+' '+x.output+' '+x.subject).toLowerCase(); if(q&&!hay.includes(q)) return false; if(sub&&x.subject!==sub) return false; if(stat==='done'&&!state.checked[x.id]) return false; if(stat==='pending'&&state.checked[x.id]) return false; return true;}); if(!tasks.length) return; const st=statsFor(tasks); html+=`<details class="week-card" open><summary><span>Semana ${w.week}: ${esc(w.focus)}</span><span class="pill ${st.p>=80?'done':'Base'}">${st.done}/${st.total}</span></summary><p class="muted small">${weekRange(w.week)} · ${esc(w.phase)}</p><div class="week-list" style="margin-top:10px">${tasks.map(taskHTML).join('')}</div></details>`});document.getElementById('temarioList').innerHTML=html||'<div class="empty">No hay temas para ese filtro.</div>';}
+function collapseAllWeeks(){document.querySelectorAll('#temarioList details').forEach(d=>d.removeAttribute('open'))}
+function expandAllWeeks(){document.querySelectorAll('#temarioList details').forEach(d=>d.setAttribute('open',''))}
+function saveReview(){const w=Number(document.getElementById('reviewWeek').value);state.reviews[w]={confidence:document.getElementById('reviewConfidence').value,target:document.getElementById('reviewTarget').value,closed:document.getElementById('reviewClosed').value,weak:document.getElementById('reviewWeak').value,action:document.getElementById('reviewAction').value,date:new Date().toISOString()};document.getElementById('reviewSaved').textContent='Revisión guardada.';save();setTimeout(()=>document.getElementById('reviewSaved').textContent='',1800)}
+function clearLogForm(){['logCivil','logProcesal','logConstitucional','logOralidad'].forEach(id=>document.getElementById(id).value=0);document.getElementById('logConfidence').value=3;document.getElementById('logOral').value='no';document.getElementById('logTopics').value='';document.getElementById('logNotes').value=''}
+function saveLog(){const log={id:Date.now(),date:document.getElementById('logDate').value||iso(new Date()),Civil:+document.getElementById('logCivil').value||0,Procesal:+document.getElementById('logProcesal').value||0,Constitucional:+document.getElementById('logConstitucional').value||0,Oralidad:+document.getElementById('logOralidad').value||0,confidence:+document.getElementById('logConfidence').value||0,oral:document.getElementById('logOral').value,topics:document.getElementById('logTopics').value,notes:document.getElementById('logNotes').value};state.logs=state.logs.filter(l=>l.date!==log.date);state.logs.push(log);state.logs.sort((a,b)=>b.date.localeCompare(a.date));document.getElementById('logSaved').textContent='Día guardado.';save();setTimeout(()=>document.getElementById('logSaved').textContent='',1800)}
+function renderLogs(){if(!document.getElementById('logDate').value) document.getElementById('logDate').value=iso(new Date()); const summaries=PLAN.map(w=>{const h=hoursInWeek(w.week);const target=state.reviews[w.week]?.target||state.settings.hoursTarget;const p=Math.min(100,Math.round(h*100/target)); return `<div style="margin-bottom:12px"><div class="toolbar"><b>Semana ${w.week}</b><span class="spacer"></span><span class="small muted">${h.toFixed(1)} / ${target} h</span></div><div class="progress"><div class="bar" style="width:${p}%"></div></div></div>`}).join('');document.getElementById('weeklyHours').innerHTML=summaries; if(!state.logs.length){document.getElementById('logTable').innerHTML='<div class="empty">Todavía no hay registros diarios.</div>';return} document.getElementById('logTable').innerHTML=`<table><thead><tr><th>Fecha</th><th>Horas</th><th>Conf.</th><th>Temas</th><th>Notas</th><th></th></tr></thead><tbody>${state.logs.map(l=>`<tr><td>${l.date}</td><td>Civ ${l.Civil||0} · Proc ${l.Procesal||0} · Const ${l.Constitucional||0} · Oral ${l.Oralidad||0}</td><td>${l.confidence||''}</td><td>${esc(l.topics||'')}</td><td>${esc(l.notes||'')}</td><td><button class="secondary" onclick="deleteLog(${l.id})">Eliminar</button></td></tr>`).join('')}</tbody></table>`}
+function deleteLog(id){if(confirm('¿Eliminar registro diario?')){state.logs=state.logs.filter(l=>l.id!==id);save();}}
+function questions(){return allTasks().filter(x=>x.subject!=='Oralidad').map(x=>({task:x,q:`Explique ${x.title}: concepto, elementos o requisitos, efectos y una diferencia relevante.`,subject:x.subject,priority:x.priority,week:x.week}))}
+function drawQuestion(){let qs=questions();const scope=document.getElementById('oralScope').value;const subj=document.getElementById('oralSubject').value;if(scope==='current') qs=qs.filter(x=>x.week==selectedWeek);if(scope==='weak') qs=qs.filter(x=>['Alta','Crítica'].includes(x.priority));if(subj) qs=qs.filter(x=>x.subject===subj);if(!qs.length) return alert('No hay preguntas en ese filtro.');currentQuestion=qs[Math.floor(Math.random()*qs.length)];document.getElementById('questionBox').innerHTML=`<span class="pill ${currentQuestion.subject}">${currentQuestion.subject}</span> <span class="pill">Semana ${currentQuestion.week}</span><br>${esc(currentQuestion.q)}`; resetTimer();}
+function startTimer(sec){if(sec) remaining=sec; clearInterval(timerId); timerId=setInterval(()=>{remaining--; updateTimer(); if(remaining<=0){clearInterval(timerId);alert('Tiempo cumplido. Cierra la respuesta en 30 segundos.')}},1000)}
+function pauseTimer(){clearInterval(timerId)}
+function resetTimer(){clearInterval(timerId);remaining=300;updateTimer()}
+function updateTimer(){const m=String(Math.floor(remaining/60)).padStart(2,'0'),s=String(remaining%60).padStart(2,'0');document.getElementById('timer').textContent=`${m}:${s}`}
+function saveAttempt(){if(!currentQuestion) return alert('Primero sortea una pregunta.');const att={id:Date.now(),date:new Date().toISOString().slice(0,10),question:currentQuestion.q,subject:currentQuestion.subject,week:currentQuestion.week,score:document.getElementById('attemptScore').value,domain:document.getElementById('attemptDomain').value,notes:document.getElementById('attemptNotes').value};state.attempts.unshift(att);document.getElementById('attemptScore').value='';document.getElementById('attemptNotes').value='';document.getElementById('attemptSaved').textContent='Intento guardado.';save();setTimeout(()=>document.getElementById('attemptSaved').textContent='',1800)}
+function renderAttempts(){if(!state.attempts.length){document.getElementById('attemptList').innerHTML='<div class="empty">Sin intentos registrados.</div>';return}document.getElementById('attemptList').innerHTML=state.attempts.slice(0,8).map(a=>`<div class="task"><div></div><div><div class="task-title">${esc(a.question)}</div><div class="task-meta"><span class="pill ${a.subject}">${a.subject}</span><span class="pill">Semana ${a.week}</span><span class="pill">Nota ${a.score||'-'}</span><span class="pill">${a.domain}</span></div><p class="muted small">${esc(a.notes||'')}</p></div><button class="secondary" onclick="deleteAttempt(${a.id})">Eliminar</button></div>`).join('')}
+function deleteAttempt(id){if(confirm('¿Eliminar intento?')){state.attempts=state.attempts.filter(a=>a.id!==id);save();}}
+function renderSettings(){document.getElementById('settingStart').value=state.settings.startDate;document.getElementById('settingHours').value=state.settings.hoursTarget;document.getElementById('settingName').value=state.settings.planName;}
+function saveSettings(){state.settings.startDate=document.getElementById('settingStart').value||'2026-07-06';state.settings.hoursTarget=+document.getElementById('settingHours').value||15;state.settings.planName=document.getElementById('settingName').value||'Examen de Grado Octubre 2026';selectedWeek=getCurrentWeek();save();alert('Configuración guardada.');}
+function resetAll(){if(confirm('Esto borrará checks, registros y respaldos locales. ¿Continuar?')){localStorage.removeItem(KEY);state=structuredClone(defaultState);selectedWeek=1;renderAll();}}
+function exportJSON(){const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});download(blob,`respaldo_examen_grado_${new Date().toISOString().slice(0,10)}.json`)}
+function importJSON(e){const file=e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=()=>{try{state=merge(structuredClone(defaultState),JSON.parse(reader.result));save();alert('Respaldo importado.')}catch(err){alert('No se pudo importar el JSON.')}}; reader.readAsText(file)}
+function exportLogsCSV(){const rows=[['fecha','civil_horas','procesal_horas','constitucional_horas','oralidad_horas','confianza','practico_oral','temas','notas'],...state.logs.map(l=>[l.date,l.Civil,l.Procesal,l.Constitucional,l.Oralidad,l.confidence,l.oral,l.topics,l.notes])];downloadCSV(rows,'bitacora_examen_grado.csv')}
+function exportTasksCSV(){const rows=[['semana','rango','materia','prioridad','tema','detalle','resultado','revisado'],...allTasks().map(x=>[x.week,weekRange(x.week),x.subject,x.priority,x.title,x.detail,x.output,state.checked[x.id]?'si':'no'])];downloadCSV(rows,'temario_checklist_examen_grado.csv')}
+function downloadCSV(rows,name){const csv=rows.map(r=>r.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')).join('\n');download(new Blob([csv],{type:'text/csv;charset=utf-8'}),name)}
+function download(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}
+function esc(s){return String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}
+document.addEventListener('DOMContentLoaded',()=>{document.getElementById('logDate').value=iso(new Date());renderAll();});
+</script>
+</body>
+</html>
