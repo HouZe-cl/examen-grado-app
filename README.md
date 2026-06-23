@@ -1,19 +1,22 @@
-# Seguimiento Examen de Grado 2026 - Webapp v2
+# Webapp seguimiento Examen de Grado — v3 corregida
 
-## Uso rápido
-1. Abre `index.html` con doble clic en el navegador.
-2. También puedes subir el archivo a GitHub Pages, Netlify, Cloudflare Pages o Vercel.
-3. La app no requiere servidor, PHP ni base de datos.
+Webapp estática para registrar el progreso diario y semanal del estudio del examen de grado de Derecho.
 
-## Qué incluye
-- Plan de 15 semanas desde el 06 de julio de 2026.
-- Checklist concreto por semana y materia.
-- Temario completo filtrable por materia, estado y búsqueda.
-- Registro diario de horas y notas.
-- Revisión semanal.
-- Simulación oral con preguntas sorteadas.
-- Exportación/importación JSON.
-- Exportación CSV de bitácora y checklist.
+## Uso local
 
-## Advertencia
-Los datos se guardan en el navegador mediante localStorage. Exporta un respaldo JSON cada semana, especialmente si usas la app en más de un dispositivo.
+Abrir `index.html` en el navegador.
+
+## Publicación gratuita
+
+Puedes subir este proyecto a GitHub Pages, Netlify, Cloudflare Pages o Vercel como sitio estático. El archivo principal debe llamarse `index.html`.
+
+## Notas de versión
+
+- Plan diario por semana desde el 06 de julio de 2026.
+- Registro de objetivos por día, horas reales, confianza y observaciones.
+- Estados de temas: pendiente, parcial, cumplido, postergado/arrastre y adelantado.
+- Posibilidad de postergar temas a la próxima sesión de la misma materia, al sábado o a la semana siguiente.
+- Posibilidad de adelantar temas futuros de la misma materia.
+- Exportación/importación JSON y exportación CSV.
+- Corrección del error `ReferenceError: day is not defined` en la vista de plan diario.
+- Validación de sintaxis JavaScript realizada con `node --check`.
