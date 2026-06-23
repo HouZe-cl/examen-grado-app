@@ -47,8 +47,8 @@
       <div class="hero-card">
         <div class="toolbar"><span class="pill Crítica">Plan v3 diario</span><span class="pill Civil">Civil 50%+</span><span class="pill Procesal">Procesal 30%</span><span class="pill Constitucional">Constitucional 20%</span></div>
         <h1>Seguimiento Examen de Grado</h1>
-        <p class="muted">Inicio sugerido: <b>06 de julio de 2026</b>. Plan de 15 semanas con objetivos diarios, postergación por materia, adelanto de temas, checklist, bitácora, oralidad y respaldo.</p>
-        <div class="toolbar" style="margin-top:14px"><button onclick="goToCurrentWeek()">Ir a semana actual</button><button class="secondary" onclick="showView('plan-diario')">Ver plan diario</button><button class="secondary" onclick="exportJSON()">Exportar respaldo</button></div>
+        <p id="heroIntro" class="muted">Inicio del plan: <b id="heroStartDate">06 de julio de 2026</b>. Plan de 15 semanas con objetivos diarios, postergación por materia, adelanto de temas, checklist, bitácora, oralidad y respaldo.</p>
+        <div class="toolbar" style="margin-top:14px"><label style="max-width:210px">Cambiar inicio<input type="date" id="quickStartDate" /></label><button class="secondary" onclick="saveStartFromHero()">Guardar fecha</button><button onclick="goToCurrentWeek()">Ir a semana actual</button><button class="secondary" onclick="showView('plan-diario')">Ver plan diario</button><button class="secondary" onclick="exportJSON()">Exportar respaldo</button></div>
       </div>
       <div class="hero-stats hero-card">
         <div class="stat"><span class="muted small">Semana de plan</span><b id="heroWeek">-</b><span id="heroDates" class="small muted"></span></div>
@@ -65,7 +65,7 @@
       <button class="tabbtn" data-view="temario" onclick="showView('temario')">Temario/checklist</button>
       <button class="tabbtn" data-view="diario" onclick="showView('diario')">Registro diario</button>
       <button class="tabbtn" data-view="oral" onclick="showView('oral')">Simulación oral</button>
-      <button class="tabbtn" data-view="backup" onclick="showView('backup')">Backup</button>
+      <button class="tabbtn" data-view="backup" onclick="showView('backup')">Backup y ajustes</button>
     </div>
   </nav>
 
@@ -216,7 +216,7 @@
       <div class="grid grid-2">
         <div class="card">
           <h2>Respaldo y traslado</h2>
-          <p class="muted">La app guarda los datos en el navegador. Exporta JSON para respaldar o mover el progreso a otro equipo.</p>
+          <p class="muted">El avance se guarda localmente en este navegador, no en GitHub, Netlify ni en una base de datos. Exporta JSON para respaldar o mover el progreso a otro equipo.</p>
           <div class="toolbar"><button onclick="exportJSON()">Descargar JSON</button><button class="secondary" onclick="exportLogsCSV()">Descargar CSV bitácora</button><button class="secondary" onclick="exportTasksCSV()">Descargar CSV temario</button></div>
           <hr style="border:0;border-top:1px solid var(--line);margin:16px 0">
           <label>Importar respaldo JSON<input type="file" id="importFile" accept="application/json" onchange="importJSON(event)" /></label>
@@ -230,7 +230,7 @@
             <label class="wide">Nombre del plan<input id="settingName" /></label>
           </div>
           <div class="toolbar" style="margin-top:12px"><button onclick="saveSettings()">Guardar configuración</button><button class="danger" onclick="resetAll()">Borrar todo</button></div>
-          <p class="muted small" style="margin-top:10px">Cambiar la fecha de inicio recalcula los rangos semanales, pero conserva checks, movimientos y registros.</p>
+          <p class="muted small" style="margin-top:10px">Cambiar la fecha de inicio recalcula los rangos semanales, pero conserva checks, movimientos y registros. Los datos quedan guardados en el navegador del usuario mediante localStorage.</p>
         </div>
       </div>
       <p class="footer-note">Webapp estática. Puedes subir este index.html a GitHub Pages, Netlify, Cloudflare Pages o Vercel.</p>
@@ -1214,7 +1214,7 @@ function totalHours(){return state.logs.reduce((s,l)=>s+Number(l.Civil||0)+Numbe
 function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tabbtn').forEach(b=>b.classList.toggle('active',b.dataset.view==id)); if(id==='temario') renderTemario(); if(id==='diario') renderLogs(); if(id==='oral') renderAttempts(); if(id==='plan-diario') renderDailyPlan(); window.scrollTo({top:0,behavior:'smooth'});}
 function goToCurrentWeek(){selectedWeek=getCurrentWeek(); setWeekSelects(); showView('plan-diario'); renderDailyPlan();}
 function renderAll(){renderHeader();renderDashboard();renderWeekSelectors();renderWeek();renderDailyPlan();renderTemario();renderLogs();renderAttempts();renderSettings();}
-function renderHeader(){const s=statsFor(allTasks());document.getElementById('heroWeek').textContent=`${getCurrentWeek()} / 15`;document.getElementById('heroDates').textContent=weekRange(getCurrentWeek());document.getElementById('heroProgress').textContent=s.p+'%';document.getElementById('heroBar').style.width=s.p+'%';}
+function renderHeader(){const s=statsFor(allTasks());document.getElementById('heroWeek').textContent=`${getCurrentWeek()} / 15`;document.getElementById('heroDates').textContent=weekRange(getCurrentWeek());document.getElementById('heroProgress').textContent=s.p+'%';document.getElementById('heroBar').style.width=s.p+'%';const start=dateFor(1,0);const heroStart=document.getElementById('heroStartDate');if(heroStart) heroStart.textContent=new Intl.DateTimeFormat('es-CL',{day:'2-digit',month:'long',year:'numeric'}).format(start);const quick=document.getElementById('quickStartDate');if(quick) quick.value=state.settings.startDate;}
 function renderDashboard(){const tasks=allTasks(), s=statsFor(tasks);document.getElementById('kpiTasks').textContent=`${s.done}/${s.total}`;document.getElementById('kpiHours').textContent=totalHours().toFixed(1);document.getElementById('kpiOral').textContent=state.attempts.length;let solid=0;PLAN.forEach(w=>{if(statsFor(weekTasks(w.week)).p>=80) solid++});document.getElementById('kpiWeeks').textContent=solid;['Civil','Procesal','Constitucional','Oralidad'].forEach(sub=>{const ss=subjectStats(sub);document.getElementById('p'+sub).textContent=`${ss.done}/${ss.total} · ${ss.p}%`;document.getElementById('bar'+sub).style.width=ss.p+'%';});const wk=PLAN[getCurrentWeek()-1];const ws=statsFor(weekTasks(wk.week));document.getElementById('currentWeekSummary').innerHTML=`<p><span class="pill">Semana ${wk.week}</span> <span class="pill ${ws.p>=80?'done':'Alta'}">${ws.p}%</span></p><h3>${esc(wk.focus)}</h3><p class="muted">${esc(wk.phase)} · ${weekRange(wk.week)}</p><div class="progress"><div class="bar" style="width:${ws.p}%"></div></div><div class="toolbar" style="margin-top:10px"><button onclick="selectedWeek=${wk.week};setWeekSelects();showView('plan-diario');renderDailyPlan()">Abrir plan diario</button><button class="secondary" onclick="selectedWeek=${wk.week};setWeekSelects();showView('semana');renderWeek()">Checklist semanal</button></div>`;document.getElementById('weekMap').innerHTML=PLAN.map(w=>{const st=statsFor(weekTasks(w.week)); return `<div class="week-card"><div class="toolbar"><span class="pill">Semana ${w.week}</span><span class="spacer"></span><span class="pill ${st.p>=80?'done':'Base'}">${st.p}%</span></div><h3>${esc(w.focus)}</h3><p class="muted small">${weekRange(w.week)} · ${esc(w.phase)}</p><div class="progress"><div class="bar" style="width:${st.p}%"></div></div><div class="toolbar" style="margin-top:10px"><button class="mini secondary" onclick="selectedWeek=${w.week};setWeekSelects();showView('plan-diario')">Abrir</button></div></div>`}).join('')}
 function renderWeekSelectors(){const opts=PLAN.map(w=>`<option value="${w.week}">Semana ${w.week} · ${weekRange(w.week)}</option>`).join('');['weekSelect','reviewWeek','dailyWeekSelect'].forEach(id=>{const el=document.getElementById(id); if(el){el.innerHTML=opts; el.value=selectedWeek;}})}
 function setWeekSelects(){['weekSelect','reviewWeek','dailyWeekSelect'].forEach(id=>{const el=document.getElementById(id); if(el) el.value=selectedWeek;})}
@@ -1261,6 +1261,7 @@ function saveAttempt(){if(!currentQuestion) return alert('Primero sortea una pre
 function renderAttempts(){if(!state.attempts.length){document.getElementById('attemptList').innerHTML='<div class="empty">Sin intentos registrados.</div>';return}document.getElementById('attemptList').innerHTML=state.attempts.slice(0,8).map(a=>`<div class="task"><div></div><div><div class="task-title">${esc(a.question)}</div><div class="task-meta"><span class="pill ${a.subject}">${a.subject}</span><span class="pill">Semana ${a.week}</span><span class="pill">Nota ${a.score||'-'}</span><span class="pill">${a.domain}</span></div><p class="muted small">${esc(a.notes||'')}</p></div><button class="secondary mini" onclick="deleteAttempt(${a.id})">Eliminar</button></div>`).join('')}
 function deleteAttempt(id){if(confirm('¿Eliminar intento?')){state.attempts=state.attempts.filter(a=>a.id!==id);save();}}
 function renderSettings(){document.getElementById('settingStart').value=state.settings.startDate;document.getElementById('settingHours').value=state.settings.hoursTarget;document.getElementById('settingName').value=state.settings.planName;}
+function saveStartFromHero(){const value=document.getElementById('quickStartDate').value;if(!value) return alert('Elige una fecha de inicio.');state.settings.startDate=value;selectedWeek=getCurrentWeek();save();alert('Fecha de inicio guardada.');}
 function saveSettings(){state.settings.startDate=document.getElementById('settingStart').value||'2026-07-06';state.settings.hoursTarget=+document.getElementById('settingHours').value||15;state.settings.planName=document.getElementById('settingName').value||'Examen de Grado Octubre 2026';selectedWeek=getCurrentWeek();save();alert('Configuración guardada.');}
 function resetAll(){if(confirm('Esto borrará checks, registros, movimientos y respaldos locales. ¿Continuar?')){localStorage.removeItem(KEY);state=structuredClone(defaultState);selectedWeek=1;renderAll();}}
 function exportJSON(){const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});download(blob,`respaldo_examen_grado_v3_${new Date().toISOString().slice(0,10)}.json`)}
