@@ -37,6 +37,7 @@
     .notice{padding:12px 14px;background:#fff7ed;border:1px solid #fed7aa;border-radius:14px;color:#7a4b11}.success{background:#ecfdf3;border-color:#a6f4c5;color:#16794c}.dangerbox{background:#fff1f3;border-color:#fecdca;color:#b42318}
     .searchline{display:grid;grid-template-columns:1fr 190px 170px;gap:10px}.accordion{display:grid;gap:10px}.week-card{border:1px solid var(--line);border-radius:16px;background:#fff;padding:14px}.week-card summary{cursor:pointer;font-weight:900;color:var(--primary);display:flex;justify-content:space-between;gap:10px}.week-card summary::-webkit-details-marker{display:none}
     .today-focus{display:grid;gap:12px}.today-empty{padding:20px;border:1px dashed #b8c1da;border-radius:16px;background:#fff;color:#667085}.backup-status{margin-top:12px}.protection-toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:1000;background:#172033;color:#fff;border-radius:12px;padding:10px 14px;box-shadow:0 14px 35px rgba(16,24,40,.18);font-weight:750;max-width:min(92vw,520px);text-align:center}.footer-note{padding:20px 0;color:#667085;text-align:center}.hide{display:none !important}
+    .drive-btn{display:inline-flex;align-items:center;gap:6px;background:#e3f2fd;color:#1565c0;border:1px solid #bbdefb;border-radius:999px;padding:5px 10px;font-size:0.8rem;font-weight:650;text-decoration:none;transition:all .2s;margin-top:6px}.drive-btn:hover{background:#1565c0;color:#fff}.minuta-box{margin-top:10px;border:1px solid rgba(59,91,181,.25);border-radius:12px;background:#fcfdfe;padding:10px 12px}.minuta-title{font-weight:700;color:var(--primary);display:flex;align-items:center;gap:6px}.minuta-content{margin-top:6px;font-size:0.9rem;line-height:1.4;color:#344054}
     @media (max-width:900px){.hero,.grid-2,.grid-3,.grid-4,.kpis,.formgrid,.day-grid{grid-template-columns:1fr}.searchline{grid-template-columns:1fr}.week-header{grid-template-columns:1fr}.task{grid-template-columns:auto 1fr}.task>button,.task>.side-actions{grid-column:2}.tabwrap{padding-left:10px}.hero-card,.card{padding:15px}}
     @media print{html,body{background:#fff!important;height:auto!important}body *{display:none!important}body::before{content:"Impresion deshabilitada para proteger el contenido del plan.";display:block!important;padding:32px;font:16px system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:#172033}}
   </style>
@@ -65,6 +66,7 @@
       <button class="tabbtn" data-view="temario" onclick="showView('temario')">Temario/checklist</button>
       <button class="tabbtn" data-view="diario" onclick="showView('diario')">Registro diario</button>
       <button class="tabbtn" data-view="oral" onclick="showView('oral')">Simulación oral</button>
+      <button class="tabbtn" data-view="fichas" onclick="showView('fichas')">Fichas de estudio</button>
       <button class="tabbtn" data-view="backup" onclick="showView('backup')">Backup y ajustes</button>
     </div>
   </nav>
@@ -228,6 +230,24 @@
           <h3>Últimos intentos</h3>
           <div id="attemptList"></div>
         </div>
+      </div>
+    </section>
+
+    <section id="fichas" class="view">
+      <div class="card">
+        <div class="toolbar">
+          <h2 style="margin:0">Fichas de Estudio (Q&A)</h2>
+          <span class="spacer"></span>
+          <select id="fichasSubjectFilter" onchange="renderFichas()" style="max-width:180px">
+            <option value="">Todas las materias</option>
+            <option>Civil</option>
+            <option>Procesal</option>
+            <option>Constitucional</option>
+          </select>
+          <input id="fichasSearchInput" placeholder="Buscar por tema o artículo..." oninput="renderFichas()" style="max-width:250px" />
+        </div>
+        <p class="muted" style="margin-top:6px">Repasa las minutas y esquemas de respuesta rápida para el examen de grado. Haz clic en cada ficha para revelar la minuta de respuesta.</p>
+        <div id="fichasGrid" class="grid grid-2" style="margin-top:14px"></div>
       </div>
     </section>
 
@@ -1177,6 +1197,424 @@ const RAW_WEEKS = [
 const DAYS = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
 const KEY='grado_examen_2026_v3';
 
+const STUDY_MINUTAS = {
+  "introduccion-al-derecho-civil": {
+    subject: "Civil",
+    topic: "Principios del Derecho Civil",
+    question: "Explique los principios fundamentales que inspiran el Código Civil de Bello y su estado actual en nuestro ordenamiento.",
+    concept: "Son las directrices o ideas matrices que estructuran el Derecho Civil chileno, sirviendo como herramientas de interpretación e integración de lagunas legales.",
+    articles: "Mensaje del CC; Art. 707 (Buena fe); Art. 1437 y 2284 (Fuentes de Obligación); Art. 1545 (Pacta sunt servanda).",
+    schema: [
+      "Autonomía de la voluntad: Libertad contractual y de conclusión. Límites: Ley, orden público y buenas costumbres.",
+      "Protección de la buena fe: Subjetiva (creencia de obrar con derecho, ej. Art. 706) y objetiva (conducta contractual leal, Art. 1546). Presunción general (Art. 707).",
+      "Rechazo al enriquecimiento sin causa: Nadie puede lucrarse injustamente a costa de otro. Acciones restitutorias (actio in rem verso).",
+      "Responsabilidad: Deber de reparar daños causados injustamente (Art. 2314 para extracontractual y Art. 1556 para contractual).",
+      "Libre circulación de los bienes y protección de la propiedad privada."
+    ],
+    pitfalls: "No confundir buena fe subjetiva (estado mental, ej. en posesión regular) con buena fe objetiva (estándar normativo de conducta leal en la ejecución de contratos)."
+  },
+  "interpretacion-de-la-ley": {
+    subject: "Civil",
+    topic: "La Ley y su Interpretación",
+    question: "Defina la ley según el Código Civil y explique detalladamente las reglas de interpretación.",
+    concept: "La ley es una declaración de la voluntad soberana que, manifestada en la forma prescrita por la Constitución, manda, prohíbe o permite (Art. 1 CC). La interpretación fija su verdadero sentido y alcance.",
+    articles: "Artículos 1, 2, 3, 4, 19, 20, 21, 22, 23 y 24 del Código Civil.",
+    schema: [
+      "Definición legal del Art. 1 y críticas (deficiencia formal, no define la ley en sí sino su manifestación).",
+      "Clasificación: Imperativas (mandan u ordenan), Prohibitivas (impiden del todo, su violación acarrea nulidad absoluta por objeto ilícito) y Permisivas.",
+      "Método de Interpretación por el legislador (auténtica, obligatoria general, Art. 3) y judicial (particular, Art. 3 i.2).",
+      "Elementos de interpretación doctrinal/judicial (Art. 19-24): Gramatical (Art. 19 i.1 y 20-21); Histórico (Art. 19 i.2); Lógico (Art. 22 i.1); Sistemático (Art. 22 i.2).",
+      "El recurso final: la equidad natural y los principios generales del derecho (Art. 24)."
+    ],
+    pitfalls: "Afirmar que 'la equidad' del Art. 24 permite al juez fallar contra texto expreso de ley. Sólo procede ante contradicciones o falta de norma clara."
+  },
+  "personas-naturales": {
+    subject: "Civil",
+    topic: "Personas Naturales",
+    question: "Explique el principio y fin de la existencia de las personas naturales, junto con sus atributos.",
+    concept: "Persona natural es todo individuo de la especie humana, cualquiera que sea su edad, sexo, estirpe o condición (Art. 55 CC).",
+    articles: "Artículos 55, 74 al 77 (principio), 78 al 97 (muerte real y presunta), 505 CC.",
+    schema: [
+      "Existencia natural (concepción hasta el nacimiento) y legal (separación completa de la madre y sobrevivir un instante siquiera, Art. 74).",
+      "Protección del que está por nacer (Art. 75, derechos en suspenso hasta nacimiento).",
+      "Muerte real (cesación de funciones encefálicas) y muerte presunta (declaración judicial tras desaparecimiento y plazos legales).",
+      "Atributos de la personalidad: Capacidad de goce, Nombre, Estado Civil, Domicilio, Nacionalidad y Patrimonio.",
+      "Teoría de los Conmoriences (Art. 79): Si dos o más personas perecen en un mismo acontecimiento y no se sabe quién murió primero, se presume muerte simultánea y ninguno sucede al otro."
+    ],
+    pitfalls: "Confundir la existencia natural con la existencia legal. La personalidad se adquiere con la existencia legal, la natural sólo goza de protección constitucional y legal expectante."
+  },
+  "personas-juridicas": {
+    subject: "Civil",
+    topic: "Personas Jurídicas",
+    question: "Defina las personas jurídicas, clasifíquelas y explique cómo se constituyen y extinguen.",
+    concept: "Persona jurídica es un ente ficticio, capaz de ejercer derechos y contraer obligaciones civiles, y de ser representada judicial y extrajudicialmente (Art. 545 CC).",
+    articles: "Artículos 545 al 564 del Código Civil (modificado por Ley 20.500).",
+    schema: [
+      "Clasificación: De derecho público (Fisco, Municipalidades) y de derecho privado (con fin de lucro: sociedades; sin fin de lucro: corporaciones y fundaciones).",
+      "Diferencia entre Corporación (asociación de personas) y Fundación (patrimonio afecto a un fin).",
+      "Atributos de las personas jurídicas (mismos que naturales, excepto estado civil y capacidad de goce restringida a sus fines).",
+      "Constitución: Instrumento público o privado depositado en secretaría municipal y registro de personas jurídicas sin fines de lucro.",
+      "Extinción: Disolución por voluntad de los socios, vencimiento del plazo, cumplimiento del fin o revocación de autoridad."
+    ],
+    pitfalls: "Decir que las corporaciones y fundaciones obtienen su personalidad por decreto supremo del Presidente. Hoy en día (desde Ley 20.500) se obtiene por registro en el Registro Civil tras depósito de estatutos en la Municipalidad."
+  },
+  "negocio-juridico": {
+    subject: "Civil",
+    topic: "Negocio Jurídico (Acto Jurídico)",
+    question: "Explique la teoría del negocio jurídico, sus elementos y la clasificación de los actos jurídicos.",
+    concept: "El acto jurídico es una declaración de voluntad destinada a crear, modificar o extinguir derechos y obligaciones, querida por su autor y protegida por el ordenamiento.",
+    articles: "Artículos 1444, 1445 del Código Civil.",
+    schema: [
+      "Estructura del Acto Jurídico (Art. 1444): Elementos esenciales (comunes y específicos), de la naturaleza (suplidos por la ley) y accidentales (agregados por cláusulas).",
+      "Requisitos de existencia: Voluntad, objeto, causa y solemnidades (en los casos que la ley lo exija).",
+      "Requisitos de validez: Voluntad exenta de vicios, objeto lícito, causa lícita y capacidad de las partes.",
+      "Clasificaciones: Unilaterales/Bilaterales; Gratuitos/Onerosos; Conmutativos/Aleatorios; Principales/Accesorios; Reales/Solemnes/Consensuales."
+    ],
+    pitfalls: "Ojo: La clasificación bilateral/unilateral del acto jurídico atiende al número de voluntades necesarias para nacer. La del contrato atiende al número de partes obligadas."
+  },
+  "vicios-del-consentimiento": {
+    subject: "Civil",
+    topic: "Vicios del Consentimiento",
+    question: "Analice los vicios del consentimiento según el Código Civil: error, fuerza, dolo y lesión.",
+    concept: "Son anomalías en la formación de la voluntad que impiden que esta se manifieste libremente y con pleno conocimiento, sancionadas con nulidad relativa.",
+    articles: "Artículos 1451 al 1459, 1445, 1468 CC.",
+    schema: [
+      "El Error: Falsa representación de la realidad. Clasificación: Error de derecho (no vicia por regla general, Art. 1452 y 706), y error de hecho. Error esencial u obstáculo (Art. 1453), sustancial (Art. 1454 i.1), sobre cualidades accidentales (Art. 1454 i.2) y en la persona (Art. 1455).",
+      "La Fuerza: Apremio físico o moral. Requisitos de la fuerza moral para viciar: Grave, injusta y determinante (Art. 1456).",
+      "El Dolo: Maquinación fraudulenta para inducir al acto. Requisitos en actos bilaterales: Obra de una de las partes y ser principal o determinante (Art. 1458). Si no, da derecho a indemnización.",
+      "La Lesión: Perjuicio pecuniario en contratos conmutativos. En Chile es de carácter objetivo-numérico y solo opera en casos específicos (ej. compraventa de inmuebles, aceptación de herencia, cláusula penal enorme, mutuo)."
+    ],
+    pitfalls: "Afirmar que la lesión vicia en general todos los actos jurídicos. El Código Civil chileno no consagra la lesión como vicio general del consentimiento, sino de forma taxativa en ciertos casos."
+  },
+  "ineficacia": {
+    subject: "Civil",
+    topic: "Ineficacia y Nulidad del Negocio Jurídico",
+    question: "Defina la nulidad, clasifíquela y distinga los efectos de la nulidad absoluta y la relativa.",
+    concept: "La nulidad es la sanción legal para la omisión de los requisitos de existencia (inexistencia/nulidad absoluta) o de validez de un acto jurídico.",
+    articles: "Artículos 1681 al 1697 del Código Civil.",
+    schema: [
+      "Clasificación: Absoluta (defensa del orden público) y Relativa o Rescisión (protección de las partes).",
+      "Causales de Nulidad Absoluta: Objeto/causa ilícita, incapacidad absoluta, falta de voluntad/objeto/causa/solemnidades. Causales de Nulidad Relativa: Vicios de consentimiento, incapacidad relativa, omisión de formalidades habilitantes.",
+      "Legitimación activa: Absoluta (el juez de oficio si aparece de manifiesto, el ministerio público en interés de la moral, cualquiera que tenga interés pecuniario excepto el que ejecutó sabiendo o debiendo saber el vicio). Relativa (sólo aquellos en cuyo beneficio la han establecido las leyes, sus herederos o cesionarios).",
+      "Saneamiento: Absoluta (sólo por transcurso del tiempo de 10 años; no se ratifica). Relativa (por ratificación tácita/expresa o paso de 4 años).",
+      "Efectos: Efecto retroactivo (las partes vuelven al estado anterior, restituciones mutuas del Art. 1687) y efectos contra terceros (acción reivindicatoria general del Art. 1689, salvo excepciones)."
+    ],
+    pitfalls: "El poseedor de mala fe no restituye frutos. ¡Error! El poseedor de buena fe al momento de la contestación de la demanda no los restituye, pero tras la sentencia sí (reglas del Art. 907)."
+  },
+  "posesion": {
+    subject: "Civil",
+    topic: "Posesión y Mera Tenencia",
+    question: "Defina la posesión, clasifíquela y compárela con la propiedad y la mera tenencia.",
+    concept: "La posesión es la tenencia de una cosa determinada con ánimo de señor o dueño (Art. 700 CC).",
+    articles: "Artículos 700 al 731 del Código Civil.",
+    schema: [
+      "Elementos de la posesión: Corpus (tenencia física) y Animus (ánimo de señor o dueño).",
+      "Clasificación de la posesión: Regular (justo título, buena fe inicial y tradición si el título es translaticio; conduce a prescripción ordinaria) e Irregular (falta alguno de estos, Art. 708).",
+      "Vicios de la posesión: Posesiones inútiles (violenta y clandestina).",
+      "Justo Título: Hecho jurídico apto para transferir el dominio. Clasificación: Constitutivos (ocupación, accesión, prescripción), Translaticios (venta, permuta, donación) y Declarativos.",
+      "Mera tenencia (Art. 714): Reconoce dominio ajeno (ej. arrendatario, usufructuario). Es inmutable por regla general (nadie puede mejorar su propio título, Art. 716)."
+    ],
+    pitfalls: "Creer que la prescripción es un justo título translaticio. ¡No! La prescripción es un modo de adquirir, y el justo título para poseer suele ser el contrato antecedente."
+  },
+  "tradicion": {
+    subject: "Civil",
+    topic: "La Tradición y el Registro de Bienes Raíces",
+    question: "Explique los requisitos de la tradición y la teoría de la posesión inscrita en Chile.",
+    concept: "La tradición es un modo de adquirir el dominio de las cosas y consiste en la entrega que el dueño hace de ellas a otro, habiendo por una parte la facultad e intención de transferir el dominio, y por la otra la capacidad e intención de adquirirlo (Art. 670 CC).",
+    articles: "Artículos 670 al 699 del Código Civil.",
+    schema: [
+      "Requisitos: Tradente y adquirente capaces, consentimiento exento de vicios, título translaticio de dominio válido, y la entrega real o simbólica.",
+      "Tradición de bienes muebles (Art. 684): Real (mano a mano), ficta (mostrándola, entregando llaves, constituto posesorio).",
+      "Tradición de bienes inmuebles (Art. 686): Se efectúa por la inscripción del título en el Registro de Propiedad del Conservador de Bienes Raíces respectivo.",
+      "Teoría de la Posesión Inscrita (Art. 686, 724, 728, 924, 2505): La inscripción es garantía, prueba y requisito de la posesión de inmuebles. Para cesar una posesión inscrita, se requiere cancelación (voluntad de las partes, nueva inscripción o decreto judicial)."
+    ],
+    pitfalls: "Confundir la entrega material con la tradición en los inmuebles. La tradición de inmuebles es estrictamente la inscripción conservatoria; la entrega material es una obligación contractual posterior."
+  },
+  "prescripcion": {
+    subject: "Civil",
+    topic: "Prescripción Adquisitiva",
+    question: "Analice las reglas comunes a toda prescripción, los requisitos de la prescripción adquisitiva y su clasificación.",
+    concept: "La prescripción adquisitiva (usucapión) es un modo de adquirir las cosas ajenas por haberse poseído durante cierto lapso, concurriendo los requisitos legales (Art. 2492 CC).",
+    articles: "Artículos 2492 al 2513 del Código Civil.",
+    schema: [
+      "Reglas comunes a ambas prescripciones (adquisitiva y extintiva): Debe ser alegada, no puede renunciarse anticipadamente y corre contra toda persona (salvo excepciones de suspensión).",
+      "Requisitos específicos: Cosa susceptible de prescribir (comerciable y no imprescriptible), posesión útil y continua, transcurso del tiempo fijado por la ley.",
+      "Prescripción Ordinaria (posesión regular): Inmuebles (5 años), Muebles (2 años). Opera la suspensión (Art. 2509, beneficio para incapaces, cónyuges, etc.).",
+      "Prescripción Extraordinaria (posesión irregular): Plazo general de 10 años contra toda persona sin suspenderse (salvo entre cónyuges, Art. 2511).",
+      "Interrupción de la prescripción: Civil (demanda judicial notificada) y Natural (imposibilidad de ejercer actos o posesión por un tercero)."
+    ],
+    pitfalls: "Asegurar que la prescripción extraordinaria se suspende. Falso: por regla general no se suspende; la única excepción absoluta es entre cónyuges (Art. 2511 en relación al 2509)."
+  },
+  "obligaciones": {
+    subject: "Civil",
+    topic: "Clasificación de las Obligaciones",
+    question: "Clasifique las obligaciones y explique la solidaridad y las obligaciones sujeto a condición.",
+    concept: "La obligación es un vínculo jurídico entre sujetos determinados (acreedor y deudor) en virtud del cual este último se encuentra en la necesidad de realizar una prestación (dar, hacer o no hacer).",
+    articles: "Artículos 1437, 1438, 1473 al 1529 del Código Civil.",
+    schema: [
+      "Principales clasificaciones: Según su objeto (dar, hacer, no hacer; de especie o cuerpo cierto y de género); Según sus sujetos (simplemente conjuntas, solidarias e indivisibles); Según sus efectos (civiles y naturales; puras y simples o sujetas a modalidad).",
+      "Obligaciones Naturales (Art. 1470): No confieren derecho a exigir su cumplimiento, pero cumplidas autorizan a retener lo pagado (soluti retentio).",
+      "La Solidaridad: Excepción a la división pasiva/activa. Requisitos: Ley, testamento o convención; misma cosa debida; unidad de prestación y pluralidad de vínculos. Efectos de la solidaridad pasiva (relación externa de cobro y relación interna de contribución a las deudas).",
+      "Obligaciones Condicionales: Hecho futuro e incierto. Clasificación: Suspensiva (suspende la adquisición del derecho) y Resolutoria (su acaecimiento extingue el derecho). Condición resolutoria tácita (Art. 1489)."
+    ],
+    pitfalls: "Afirmar que en la solidaridad pasiva extinguida por pago, el codeudor que pagó puede cobrar el total solidariamente a los demás. ¡No! Se subroga pero la obligación se vuelve simplemente conjunta en la relación interna."
+  },
+  "efectos-de-las-obligaciones": {
+    subject: "Civil",
+    topic: "Efectos de las Obligaciones e Incumplimiento",
+    question: "Explique los derechos del acreedor ante el incumplimiento y los requisitos de la indemnización de perjuicios.",
+    concept: "Los efectos de las obligaciones son el conjunto de derechos y medidas que la ley confiere al acreedor para exigir del deudor el cumplimiento íntegro y oportuno de la prestación.",
+    articles: "Artículos 1545 al 1559 del Código Civil.",
+    schema: [
+      "Derechos del acreedor: Ejecución forzada en naturaleza, Ejecución por equivalencia (indemnización de perjuicios) y Derechos auxiliares del acreedor.",
+      "Requisitos de la indemnización de perjuicios contractual: Incumplimiento del deudor, Perjuicio del acreedor (daño emergente y lucro cesante), Relación de causalidad, Imputabilidad (dolo o culpa), Constitución en mora del deudor (Art. 1551) y Ausencia de causal de exoneración (caso fortuito, fuerza mayor, teoría de la imprevisión en ciertos casos).",
+      "Mora (Art. 1551): Retardo imputable tras interpelación del acreedor (contractual expresa, tácita o judicial). Mora purga la mora (Art. 1552).",
+      "Avaluación de perjuicios: Judicial, Legal (intereses en obligaciones de dinero, Art. 1559) y Convencional (cláusula penal, Art. 1535)."
+    ],
+    pitfalls: "Olvidar que en las obligaciones contractuales la culpa se presume (Art. 1547 i.3), a diferencia de la extracontractual donde el actor debe probar el dolo o culpa del demandado."
+  },
+  "extincion-de-obligaciones": {
+    subject: "Civil",
+    topic: "Modos de Extinguir Obligaciones",
+    question: "Defina los modos de extinguir obligaciones y analice el pago efectivo y la prescripción extintiva.",
+    concept: "Son los hechos o actos jurídicos en virtud de los cuales se disuelve o destruye el vínculo obligatorio entre acreedor y deudor.",
+    articles: "Artículos 1567 al 1666 del Código Civil.",
+    schema: [
+      "Enumeración del Art. 1567: Mutuo consentimiento (resciliación), Solución o pago efectivo, Novación, Transacción, Remisión, Compensación, Confusión, Pérdida de la cosa debida, Nulidad o rescisión, Evento de la condición resolutoria, y Prescripción.",
+      "El Pago Efectivo: Prestación de lo que se debe (Art. 1568). Requisitos: Integridad, identidad e indivisibilidad. Quién puede pagar (deudor, terceros interesados, terceros extraños con o sin consentimiento).",
+      "La Prescripción Extintiva: Extinción de acciones por no haberse ejercido durante cierto tiempo. Requisitos: Acción prescriptible, inactividad del acreedor y deudor, transcurso del tiempo.",
+      "Plazos de Prescripción de acciones civiles: Ejecutiva (3 años, que se convierte en ordinaria por otros 2), Ordinaria (5 años), Especiales (ej. corto tiempo del Art. 2521 y 2522)."
+    ],
+    pitfalls: "Asegurar que la prescripción extingue la obligación en sí. No es así: extingue la acción para exigir su cumplimiento, subsistiendo la obligación como natural (Art. 1470 N° 3)."
+  },
+  "compraventa": {
+    subject: "Civil",
+    topic: "Contrato de Compraventa",
+    question: "Explique la definición, características, requisitos de la compraventa y las obligaciones del vendedor.",
+    concept: "La compraventa es un contrato en que una de las partes se obliga a dar una cosa y la otra a pagarla en dinero (Art. 1793 CC).",
+    articles: "Artículos 1793 al 1896 del Código Civil.",
+    schema: [
+      "Características: Bilateral, oneroso, generalmente conmutativo, principal, nominado y por regla general consensual (solemne para inmuebles, servidumbres, sucesión hereditaria).",
+      "Elementos esenciales: La Cosa (comerciable, determinada, existente o esperada, no propia) y el Precio (en dinero, real y serio, determinado o determinable).",
+      "Capacidad (Art. 1796): Incapacidades especiales (compras entre cónyuges no separados judicialmente, padres e hijos sujetos a patria potestad).",
+      "Obligaciones del vendedor: Entrega de la cosa (que en Chile es tradición si el vendedor es dueño, sino posesión pacífica) y Obligación de saneamiento (saneamiento de la evicción y de los vicios redhibitorios/ocultos).",
+      "Obligaciones del comprador: Recibir la cosa y pagar el precio."
+    ],
+    pitfalls: "Decir que la venta de cosa ajena en Chile es nula. ¡No! Es válida y produce efectos (Art. 1815 CC), sin perjuicio de los derechos del verdadero dueño."
+  },
+  "responsabilidad-extracontractual-i": {
+    subject: "Civil",
+    topic: "Responsabilidad Extracontractual",
+    question: "Defina la responsabilidad extracontractual y explique detalladamente sus presupuestos de procedencia.",
+    concept: "Es el deber jurídico de reparar un daño causado a otro en ausencia de una relación obligatoria previa o cuando el daño excede la órbita del contrato.",
+    articles: "Artículos 2314 al 2334 del Código Civil.",
+    schema: [
+      "Presupuestos de procedencia: 1) Capacidad extracontractual (diferente a contractual, Art. 2319: dementes e infantes menores de 7 años son incapaces, menores de 16 si actúan sin discernimiento); 2) Hecho imputable (acción u omisión por dolo o culpa); 3) Nexo causal (vínculo directo entre hecho y daño); 4) Daño (perjuicio directo cierto: daño emergente, lucro cesante y daño moral).",
+      "Responsabilidad por hecho propio (Art. 2314) y presunciones de responsabilidad.",
+      "Responsabilidad por hecho ajeno (Art. 2320 y 2322): Requiere vínculo de dependencia y conducta negligente presunta. Permite acción de reembolso.",
+      "Responsabilidad por el hecho de las cosas (Art. 2323 a 2328): Ruina de edificio, daño por animal fiero, cosa caída de la parte superior."
+    ],
+    pitfalls: "En extracontractual, la culpa no se presume por regla general; debe ser probada por el demandante (Art. 2314), salvo las presunciones del Art. 2320, 2323, etc."
+  },
+  "matrimonio": {
+    subject: "Civil",
+    topic: "Familia: Matrimonio y Disolución",
+    question: "Defina el matrimonio, señale sus requisitos de existencia y validez, y las causales de disolución.",
+    concept: "El matrimonio es un contrato solemne por el cual dos personas se unen actual e indisolublemente, y por toda la vida, con el fin de vivir juntos, de procrear, y de auxiliarse mutuamente (Art. 102 CC).",
+    articles: "Artículo 102 del CC; Ley 19.947 (Ley de Matrimonio Civil).",
+    schema: [
+      "Requisitos de existencia: Diferencia o igualdad de sexo (Ley de matrimonio igualitario), consentimiento de los contrayentes, oficial del Registro Civil (o ministro de culto autorizado) y ratificación ante oficial del Registro Civil.",
+      "Requisitos de validez: Capacidad de los contrayentes (ausencia de impedimentos dirimentes absolutos y relativos), consentimiento libre y espontáneo, solemnidades legales.",
+      "Impedimentos dirimentes absolutos: Vínculo matrimonial o Acuerdo de Unión Civil no disuelto, menores de 16 años, privación de razón, anomalías psíquicas, etc.",
+      "Disolución del matrimonio (Art. 42 LMC): Muerte de uno de los cónyuges, muerte presunta, sentencia firme de nulidad, sentencia firme de divorcio.",
+      "El Divorcio: Divorcio por cese de convivencia (mutuo acuerdo: 1 año de cese; unilateral: 3 años de cese) y divorcio por culpa (falta imputable que constituya violación grave de deberes matrimoniales)."
+    ],
+    pitfalls: "Afirmar que el cese de convivencia disuelve el matrimonio automáticamente. Se requiere sentencia judicial firme dictada tras el juicio correspondiente."
+  },
+  "regimenes-matrimoniales": {
+    subject: "Civil",
+    topic: "Regímenes Matrimoniales",
+    question: "Compare los regímenes matrimoniales en Chile, detallando el funcionamiento de la Sociedad Conyugal.",
+    concept: "Estatuto jurídico que regula las relaciones patrimoniales de los cónyuges entre sí y respecto de terceros durante el matrimonio.",
+    articles: "Artículos 135, 150, 1715 al 1805 del Código Civil.",
+    schema: [
+      "Tipos de regímenes en Chile: Sociedad Conyugal (régimen supletorio legal), Separación de Bienes y Participación en los Gananciales.",
+      "Sociedad Conyugal: Coexistencia de 3 patrimonios: 1) Haber de la sociedad (bienes sociales muebles aportados/adquiridos a título oneroso, inmuebles adquiridos a título oneroso); 2) Haber propio del marido; 3) Haber propio de la mujer (bienes raíces aportados o adquiridos a título gratuito).",
+      "Patrimonio Reservado de la Mujer Casada (Art. 150): Bienes adquiridos por la mujer mediante su trabajo separado del marido. Ella los administra con total independencia.",
+      "Administración ordinaria de la sociedad conyugal: Corresponde al marido, pero requiere autorización de la mujer para enajenar o gravar bienes raíces sociales, ceder derechos hereditarios o constituir garantías avalistas.",
+      "Liquidación: Formación de comunidad al disolverse, deducción de recompensas, partición y distribución de gananciales por mitad."
+    ],
+    pitfalls: "Decir que la mujer casada en sociedad conyugal es totalmente incapaz. Es plenamente capaz, pero sus bienes propios están administrados por el marido, salvo los del Art. 150, 166 y 167."
+  },
+  "sucesorio": {
+    subject: "Civil",
+    topic: "Sucesión por Causa de Muerte",
+    question: "Defina la sucesión por causa de muerte, explique la delación de la herencia y el derecho de transmisión.",
+    concept: "Modo de adquirir el dominio del patrimonio de una persona difunta, o una cuota de él, o especies determinadas.",
+    articles: "Artículos 951 al 1096 del Código Civil.",
+    schema: [
+      "Características: Derivativo, gratuito, por causa de muerte, puede ser a título universal (herencia) o singular (legado).",
+      "Apertura de la sucesión: Hecho que habilita a los herederos a tomar posesión. Se produce al momento de la muerte del causante en su último domicilio (salvo excepciones).",
+      "Delación (Art. 956): Llamamiento que hace la ley a aceptar o repudiar la asignación. Generalmente al momento de la muerte.",
+      "Derecho de Transmisión (Art. 957): Si el heredero o legatario fallece antes de aceptar o repudiar la asignación que se le ha deferido, transmite a sus herederos la facultad de aceptarla o repudiarla (requiere aceptar la herencia del transmitente).",
+      "Derecho de Representación (Art. 984): Ficción legal por la cual se supone que una persona tiene el lugar y por consiguiente el grado de parentesco y los derechos hereditarios de su padre o madre si este no quisiese o no pudiese suceder (sólo en sucesión intestada y descendencia/hermanos)."
+    ],
+    pitfalls: "Confundir transmisión con representación. Transmisión se funda en la muerte del transmitente sin decidir sobre la herencia anterior; representación opera si el representado falta por premoriencia, indignidad, desheredamiento o repudiación."
+  },
+  "jurisdiccion": {
+    subject: "Procesal",
+    topic: "Jurisdicción",
+    question: "Defina la jurisdicción, señale sus características fundamentales y los equivalentes jurisdiccionales.",
+    concept: "Poder-deber del Estado, ejercido exclusivamente por tribunales establecidos en la ley, para resolver conflictos de relevancia jurídica con efecto de cosa juzgada y ejecución forzada.",
+    articles: "Art. 76 Constitución Política; Art. 1 Código Orgánico de Tribunales.",
+    schema: [
+      "Características: Ámbito constitucional, de origen público, privativa de los tribunales ordinarios/especiales, indelegable, improrrogable, y produce el efecto de Cosa Juzgada.",
+      "Momentos de la Jurisdicción: Cognición (conocimiento), Decisión (sentencia), Ejecución (imperio, cumplimiento forzado).",
+      "Límites de la jurisdicción: En el espacio (territorio del Estado) y en el tiempo (inmunidades parlamentarias, plazos de jueces).",
+      "Equivalentes Jurisdiccionales: Medios por los cuales se logra resolver un conflicto sin necesidad de una sentencia judicial dictada en juicio (ej. Transacción, Conciliación judicial, Avenida judicial, Sentencia extranjera mediante exequátur)."
+    ],
+    pitfalls: "Nombrar al arbitraje como equivalente jurisdiccional. El árbitro ejerce jurisdicción real; por tanto, el laudo arbitral es una sentencia, no un equivalente jurisdiccional."
+  },
+  "competencia": {
+    subject: "Procesal",
+    topic: "La Competencia",
+    question: "Defina la competencia, clasifíquela y explique las reglas generales de competencia.",
+    concept: "Es la facultad que tiene cada juez o tribunal para conocer de los negocios que la ley ha colocado dentro de la esfera de sus atribuciones (Art. 108 COT).",
+    articles: "Artículos 108 al 187 del Código Orgánico de Tribunales.",
+    schema: [
+      "Diferencia entre Jurisdicción (el todo, poder de juzgar) y Competencia (la medida en que se distribuye dicho poder).",
+      "Reglas Generales de Competencia (Art. 109-114 COT): 1) Radicación o prevención (una vez fijada la competencia ante tribunal competente, no cambia por hechos posteriores); 2) Graduación o grado (fijado el asunto en primera instancia, queda fijado el de segunda); 3) Extensión (el juez conoce de la cuestión principal, reconvención, incidentes y ejecución); 4) Prevención; 5) Inexcusabilidad.",
+      "Competencia Absoluta: Determina la jerarquía del tribunal. Factores: Cuantía, Materia y Fuero. Es de orden público (no prorrogable).",
+      "Competencia Relativa: Determina qué tribunal específico dentro de la jerarquía conoce. Factor: Territorio. Es de orden privado (prorrogable en asuntos civiles contenciosos de primera instancia entre personas capaces, Art. 181 COT)."
+    ],
+    pitfalls: "Asegurar que la prórroga de competencia procede en materia penal o familiar. ¡No! La prórroga de competencia relativa territorial está restringida por ley a la materia civil contenciosa en primera instancia."
+  },
+  "notificaciones": {
+    subject: "Procesal",
+    topic: "Las Notificaciones",
+    question: "Defina las notificaciones, clasifículas y explique la notificación personal y la personal subsidiaria (Art. 44 CPC).",
+    concept: "Actuación procesal que tiene por objeto dar a conocer a las partes las resoluciones judiciales dictadas en un proceso o requerirlas para el cumplimiento de un acto.",
+    articles: "Artículos 38 al 58 del Código de Procedimiento Civil.",
+    schema: [
+      "Importancia: Requisito de eficacia de las resoluciones judiciales y resguardo del debido proceso.",
+      "Notificación Personal (Art. 40): Entrega en persona de copia íntegra de la resolución y de la solicitud. Requisitos de validez, lugares y horas hábiles. Obligatoria para la primera notificación del juicio al demandado.",
+      "Notificación Personal Subsidiaria o del Art. 44 CPC: Procede cuando el demandado es buscado en dos días distintos en su habitación o lugar de trabajo. Requiere certificación de búsqueda por el receptor, orden del tribunal y entrega de copias a persona adulta o fijación de carteles.",
+      "Otras notificaciones: Por Cédula (en el domicilio, obligatoria para sentencias definitivas y comparecencia personal); Por Estado Diario (regla general supletoria, publicación digital); Tácita (cuando la parte realiza actuaciones que suponen conocimiento de la resolución, Art. 55)."
+    ],
+    pitfalls: "Decir que la notificación del Art. 44 se puede hacer sin autorización judicial. Se requiere necesariamente que el juez ordene su práctica tras recibir el certificado de búsquedas del receptor."
+  },
+  "ordinario": {
+    subject: "Procesal",
+    topic: "Juicio Ordinario de Mayor Cuantía",
+    question: "Explique detalladamente la estructura del juicio ordinario de mayor cuantía en sus etapas de discusión y prueba.",
+    concept: "Procedimiento civil de cognición, declarativo, supletorio y de aplicación general en asuntos de cuantía superior a 500 UTM.",
+    articles: "Artículos 253 al 433 del Código de Procedimiento Civil.",
+    schema: [
+      "Etapa de Discusión: 1) Demanda (requisitos del Art. 254); 2) Emplazamiento (notificación + término para contestar); 3) Actitudes del demandado (allanamiento, rebeldía, excepciones dilatorias del Art. 303, contestación ordinaria, reconvención); 4) Réplica y Dúplica.",
+      "Trámite obligatorio de Conciliación (Art. 262 CPC): Llamado del juez a bases de acuerdo. Obligatorio una vez terminada la discusión en juicios susceptibles de transacción.",
+      "Etapa de Prueba: Resolución que recibe la causa a prueba (determina hechos sustanciales, pertinentes y controvertidos). Recursos contra ella (reposición con apelación subsidiaria, plazo 3 días).",
+      "Término Probatorio: Ordinario (20 días general), Extraordinario (para rendir prueba fuera del territorio) y Especiales (entorpecimiento, Art. 327).",
+      "Valoración de la prueba: En el CPC chileno rige la Prueba Tasada Legal (ej. plena prueba de dos testigos contestes, instrumento público). En la justicia reformada (laboral, familia, penal) rige la Sana Crítica."
+    ],
+    pitfalls: "Olvidar que el término probatorio en el juicio ordinario es fatal para la prueba testimonial (debe presentarse lista de testigos dentro de los 5 primeros días desde la última notificación de la resolución de prueba)."
+  },
+  "recursos": {
+    subject: "Procesal",
+    topic: "Recursos de Apelación y Casación",
+    question: "Defina el recurso de apelación y distinga entre la casación en la forma y en el fondo.",
+    concept: "Actos jurídicos procesales de impugnación destinados a obtener la reforma, modificación o anulación de resoluciones dictadas en contravención a la ley.",
+    articles: "Artículos 186 al 230 (Apelación); 764 al 808 (Casación) del CPC.",
+    schema: [
+      "Recurso de Apelación: Concedido a la parte agraviada para que el tribunal superior enmiende con arreglo a derecho una resolución del inferior. Resoluciones apelables: Sentencias definitivas e interlocutorias de primera instancia. Plazo: 10 días generales (5 días para autos y decretos). Efectos: devolutivo (siempre) y suspensivo (opcional, otorga orden de no innovar).",
+      "Recurso de Casación: Anulación de una sentencia dictada con infracción de ley o en procedimiento viciado.",
+      "Casación en la Forma: Corrige vicios de tramitación o de la estructura de la sentencia (falta de considerandos, ultra petita). Requiere preparación del recurso (haber reclamado el vicio previamente).",
+      "Casación en el Fondo: De competencia exclusiva de la Corte Suprema. Ataca sentencias definitivas o interlocutorias que pongan término al juicio dictadas con infracción de ley que haya influido substancialmente en lo dispositivo del fallo."
+    ],
+    pitfalls: "Asegurar que la apelación de una sentencia interlocutoria se interpone ante el tribunal superior. ¡No! Todo recurso de apelación se interpone ante el mismo tribunal que dictó la resolución para ante el superior jerárquico."
+  },
+  "ejecutivo": {
+    subject: "Procesal",
+    topic: "Procedimiento Ejecutivo",
+    question: "Señale los requisitos de procedencia de la acción ejecutiva y describa la tramitación del cuaderno de apremio.",
+    concept: "Procedimiento de ejecución destinado a obtener el cumplimiento forzado de una obligación indubitada que consta en un título ejecutivo.",
+    articles: "Artículos 434 al 544 del Código de Procedimiento Civil.",
+    schema: [
+      "Requisitos de procedencia: 1) Título ejecutivo (Art. 434, ej. sentencia firme, escritura pública, letra de cambio aceptada ante notario); 2) Obligación líquida o liquidable; 3) Actualmente exigible; 4) Acción ejecutiva no prescrita (regla general 3 años).",
+      "Coexistencia de dos cuadernos independientes: Cuaderno Ejecutivo o de Ejecución (demanda, mandamiento, excepciones, sentencia) y Cuaderno de Apremio (embargo, realización de bienes, remate).",
+      "El Embargo: Acto por el cual se indisponen bienes específicos del deudor para asegurar el pago. Efectos (objeto ilícito en la enajenación de la cosa embargada, Art. 1464 N°3 CC).",
+      "Excepciones en el juicio ejecutivo (Art. 464 CPC): Catálogo cerrado y taxativo de 18 excepciones que debe presentar el ejecutado en el plazo fatal de 4 u 8 días."
+    ],
+    pitfalls: "Decir que el cuaderno de apremio se suspende por la interposición de excepciones. Falso: el cuaderno de apremio continúa con el embargo y la administración de bienes, suspendiéndose únicamente el remate o pago final hasta que recaiga sentencia definitiva."
+  },
+  "bases-constitucionales": {
+    subject: "Constitucional",
+    topic: "Bases de la Institucionalidad",
+    question: "Explique las Bases de la Institucionalidad, el principio de servicialidad del Estado y los límites a la soberanía del Art. 5.",
+    concept: "Principios valóricos y políticos fundamentales que sustentan el ordenamiento constitucional chileno, contenidos en el Capítulo I de la Constitución.",
+    articles: "Artículos 1 al 9 de la Constitución Política de la República.",
+    schema: [
+      "Dignidad y libertad humana (Art. 1 i.1: 'Las personas nacen libres e iguales en dignidad y derechos').",
+      "El principio de servicialidad (Art. 1 i.4: 'El Estado está al servicio de la persona humana y su finalidad es promover el bien común...').",
+      "Principio de subsidiariedad: Reconocimiento de grupos intermedios y limitación del Estado en actividades económicas que privados puedan realizar (derivado del Art. 1 i.3).",
+      "Límites a la Soberanía (Art. 5 inc. 2): El ejercicio de la soberanía tiene como límite el respeto a los derechos esenciales que emanan de la naturaleza humana. Deber del Estado de respetar y promover los derechos garantizados por la Constitución y por los tratados internacionales ratificados por Chile y vigentes."
+    ],
+    pitfalls: "Sostener que los tratados de derechos humanos tienen rango supraconstitucional absoluto en el texto de la CPR. Doctrinariamente se discute si tienen rango constitucional o supra, pero formalmente el TC aplica control de constitucionalidad sobre ellos."
+  },
+  "proteccion": {
+    subject: "Constitucional",
+    topic: "Recurso de Protección",
+    question: "Explique el Recurso (acción) de Protección: objeto, legitimación, tramitación y derechos protegidos.",
+    concept: "Acción constitucional de tutela de derechos fundamentales cautelar e informal, destinada a restablecer el imperio del derecho ante actos u omisiones arbitrarios o ilegales.",
+    articles: "Artículo 20 de la Constitución Política; Auto Acordado de la Corte Suprema sobre tramitación.",
+    schema: [
+      "Presupuesto: Acto u omisión arbitrario (carente de razonabilidad) o ilegal (contrario a la ley) que cause privación, perturbación o amenaza en el libre ejercicio de derechos protegidos.",
+      "Derechos Protegidos: Catálogo amplio del Art. 20 (vida, igualdad ante la ley, vida privada, inviolabilidad del hogar, libertad de conciencia, propiedad, etc.). Excluye expresamente la libertad personal (protegida por amparo) y la salud en su dimensión prestacional pura.",
+      "Plazo para interponer: 30 días corridos contados desde que se tuvo conocimiento del acto omisión.",
+      "Competencia y Tramitación: Se interpone ante la Corte de Apelaciones respectiva. Admisión rápida, informe solicitado al recurrido, vista de la causa preferente. Apelable ante la Corte Suprema (plazo 5 días)."
+    ],
+    pitfalls: "Definir la acción de protección como un juicio de lato conocimiento. Es una acción cautelar de urgencia, por lo que la sentencia definitiva no produce cosa juzgada absoluta sobre el fondo del derecho discutido (deja a salvo las acciones ordinarias)."
+  },
+  "amparo": {
+    subject: "Constitucional",
+    topic: "Recurso de Amparo",
+    question: "Defina el recurso de amparo (Habeas Corpus), clasifíquelo y señale su procedimiento.",
+    concept: "Acción constitucional cautelar destinada a proteger la libertad personal y la seguridad individual frente a arrestos, detenciones o prisiones arbitrarias o ilegales.",
+    articles: "Artículo 21 de la Constitución Política.",
+    schema: [
+      "Tipos de Amparo: Correctivo (frente a privación real y efectiva de libertad) y Preventivo (frente a perturbación o amenaza de la libertad o seguridad individual).",
+      "Legitimación activa popular: Puede interponerlo cualquier persona a nombre del afectado, sin necesidad de mandato judicial.",
+      "Competencia: Corte de Apelaciones respectiva. Tramitación sumamente informal: puede presentarse por cualquier vía física o digital, sin solemnidades. El tribunal puede constituirse en el lugar de detención.",
+      "Resolución y Plazo: La Corte debe fallar en el menor tiempo posible, recabando antecedentes urgentes. Apelable ante la Corte Suprema en el plazo de 5 días."
+    ],
+    pitfalls: "Confundir el recurso de amparo constitucional con el amparo económico. El amparo económico protege la libertad económica (Art. 19 N° 21) y tiene su fuente en la Ley 18.971, no en el Art. 21 de la CPR."
+  }
+};
+
+function getMinutaForTask(task){
+  if(!task) return null;
+  const tSlug = slug(task.title || '');
+  for (const k in STUDY_MINUTAS) {
+    if (tSlug.includes(k) || k.includes(tSlug)) {
+      return STUDY_MINUTAS[k];
+    }
+  }
+  return {
+    topic: task.title,
+    subject: task.subject,
+    question: `Explique ${task.title}: concepto, elementos o requisitos, efectos y una diferencia relevante con otra institución afín.`,
+    concept: task.detail || 'Tema de estudio contemplado en el plan de preparación.',
+    articles: task.subject === 'Civil' ? 'Código Civil chileno.' : (task.subject === 'Procesal' ? 'Código de Procedimiento Civil / COT.' : 'Constitución Política de la República.'),
+    schema: [
+      `Definición clara y precisa de ${task.title}.`,
+      "Naturaleza jurídica o clasificación principal del tema.",
+      "Requisitos de existencia, validez o presupuestos aplicables.",
+      "Efectos jurídicos o tramitación correspondiente.",
+      "Diferencia o paralelo con figuras similares de la misma materia."
+    ],
+    pitfalls: "Presta atención al vocabulario técnico-jurídico y a los plazos legales aplicables."
+  };
+}
+
 function slug(s){return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}
 function buildTasks(){
   const tasks=[];
@@ -1196,7 +1634,7 @@ function outputFor(subject,title,sessionType){
 }
 const BASE_TASKS = buildTasks();
 const PLAN = RAW_WEEKS.map(w=>({week:w.week, phase:w.phase, focus:w.focus, tasks:BASE_TASKS.filter(t=>t.originalWeek===w.week)}));
-const defaultState={checked:{},taskStatus:{},moves:{},logs:[],reviews:{},attempts:[],customTasks:[],backups:{lastExportAt:''},settings:{startDate:'2026-07-06',hoursTarget:15,planName:'Examen de Grado Octubre 2026'}};
+const defaultState={checked:{},taskStatus:{},moves:{},logs:[],reviews:{},attempts:[],customTasks:[],backups:{lastExportAt:''},settings:{startDate:'2026-07-06',hoursTarget:15,planName:'Examen de Grado Octubre 2026'},driveLinks:{},studyNotes:{}};
 let state=load(); let selectedWeek=getCurrentWeek(); let currentQuestion=null; let timerId=null; let remaining=300;
 
 function load(){try{const raw=localStorage.getItem(KEY); if(!raw) return structuredClone(defaultState); return merge(structuredClone(defaultState),JSON.parse(raw));}catch(e){return structuredClone(defaultState)}}
@@ -1230,10 +1668,10 @@ function plannedHoursWeek(week){return weekTasks(week).reduce((s,t)=>s+Number(t.
 function hoursInWeek(week){const start=dateFor(week,0);const end=dateFor(week,7);return state.logs.filter(l=>{const d=new Date(l.date+'T00:00:00');return d>=start&&d<end}).reduce((s,l)=>s+Number(l.Civil||0)+Number(l.Procesal||0)+Number(l.Constitucional||0)+Number(l.Oralidad||0),0)}
 function hoursBySubjectInWeek(week){const start=dateFor(week,0);const end=dateFor(week,7);const out={Civil:0,Procesal:0,Constitucional:0,Oralidad:0};state.logs.filter(l=>{const d=new Date(l.date+'T00:00:00');return d>=start&&d<end}).forEach(l=>Object.keys(out).forEach(k=>out[k]+=Number(l[k]||0)));return out}
 function totalHours(){return state.logs.reduce((s,l)=>s+Number(l.Civil||0)+Number(l.Procesal||0)+Number(l.Constitucional||0)+Number(l.Oralidad||0),0)}
-function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tabbtn').forEach(b=>b.classList.toggle('active',b.dataset.view==id)); if(id==='hoy') renderToday(); if(id==='temario') renderTemario(); if(id==='diario') renderLogs(); if(id==='oral') renderAttempts(); if(id==='backup') renderBackupStatus(); if(id==='plan-diario') renderDailyPlan(); window.scrollTo({top:0,behavior:'smooth'});}
+function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tabbtn').forEach(b=>b.classList.toggle('active',b.dataset.view==id)); if(id==='hoy') renderToday(); if(id==='temario') renderTemario(); if(id==='diario') renderLogs(); if(id==='oral') renderAttempts(); if(id==='backup') renderBackupStatus(); if(id==='plan-diario') renderDailyPlan(); if(id==='fichas') renderFichas(); window.scrollTo({top:0,behavior:'smooth'});}
 function goToCurrentWeek(){selectedWeek=getCurrentWeek(); setWeekSelects(); showView('plan-diario'); renderDailyPlan();}
 function goToToday(){const pos=todayPlanPosition();selectedWeek=pos.week;setWeekSelects();showView('hoy');}
-function renderAll(){renderHeader();renderToday();renderDashboard();renderWeekSelectors();renderWeek();renderDailyPlan();renderTemario();renderLogs();renderAttempts();renderSettings();renderBackupStatus();}
+function renderAll(){renderHeader();renderToday();renderDashboard();renderWeekSelectors();renderWeek();renderDailyPlan();renderTemario();renderLogs();renderAttempts();renderSettings();renderBackupStatus();renderFichas();}
 function renderHeader(){const s=statsFor(allTasks());document.getElementById('heroWeek').textContent=`${getCurrentWeek()} / 15`;document.getElementById('heroDates').textContent=weekRange(getCurrentWeek());document.getElementById('heroProgress').textContent=s.p+'%';document.getElementById('heroBar').style.width=s.p+'%';const start=dateFor(1,0);const heroStart=document.getElementById('heroStartDate');if(heroStart) heroStart.textContent=new Intl.DateTimeFormat('es-CL',{day:'2-digit',month:'long',year:'numeric'}).format(start);const quick=document.getElementById('quickStartDate');if(quick) quick.value=state.settings.startDate;}
 function todayPlanPosition(){const start=new Date((state?.settings?.startDate||'2026-07-06')+'T00:00:00');const now=new Date();const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());let diff=Math.floor((today-start)/86400000);if(diff<0) diff=0;if(diff>104) diff=104;return {week:Math.floor(diff/7)+1,dayIndex:diff%7};}
 function backupAgeDays(){if(!state.backups?.lastExportAt) return null;const last=new Date(state.backups.lastExportAt);const now=new Date();return Math.floor((now-last)/86400000);}
@@ -1248,7 +1686,97 @@ function setWeekSelects(){['weekSelect','reviewWeek','dailyWeekSelect'].forEach(
 function renderWeek(){const sel=document.getElementById('weekSelect'); if(sel) selectedWeek=Number(sel.value||selectedWeek); setWeekSelects(); const w=PLAN[selectedWeek-1]; const tasks=weekTasks(selectedWeek); const st=statsFor(tasks);document.getElementById('weekTitle').textContent=`Semana ${w.week}: ${w.focus}`;document.getElementById('weekSubtitle').textContent=`${weekRange(w.week)} · ${w.phase}`;document.getElementById('weekProgressText').textContent=`${st.done}/${st.total} temas · ${st.p}%`;document.getElementById('weekHoursText').textContent=`${hoursInWeek(w.week).toFixed(1)} h registradas · ${plannedHoursWeek(w.week).toFixed(1)} h planificadas`;document.getElementById('weekBar').style.width=st.p+'%';const groups={Civil:[],Procesal:[],Constitucional:[],Oralidad:[]};tasks.forEach(x=>groups[x.subject]?.push(x));document.getElementById('weekTasks').innerHTML=Object.entries(groups).filter(([s,arr])=>arr.length).map(([subject,arr])=>{const ss=statsFor(arr);return `<div class="subject-block"><div class="subject-head ${subject}"><b>${subject}</b><span class="pill ${subject}">${ss.done}/${ss.total} · ${ss.p}%</span></div><div class="week-list" style="padding:12px">${arr.map(taskHTML).join('')}</div></div>`}).join(''); const rev=state.reviews[selectedWeek]||{};document.getElementById('reviewWeek').value=selectedWeek;document.getElementById('reviewConfidence').value=rev.confidence||'';document.getElementById('reviewTarget').value=rev.target||state.settings.hoursTarget;document.getElementById('reviewClosed').value=rev.closed||'no';document.getElementById('reviewWeak').value=rev.weak||'';document.getElementById('reviewAction').value=rev.action||'';}
 function renderDailyPlan(){const sel=document.getElementById('dailyWeekSelect'); if(sel) selectedWeek=Number(sel.value||selectedWeek); setWeekSelects(); const w=PLAN[selectedWeek-1];document.getElementById('dailyTitle').textContent=`Semana ${w.week}: planificación diaria`;document.getElementById('dailySubtitle').textContent=`${weekRange(w.week)} · ${w.phase} · ${w.focus}`;const tasks=weekTasks(selectedWeek);const st=statsFor(tasks);const h=hoursInWeek(selectedWeek);const planned=plannedHoursWeek(selectedWeek);const bySub=hoursBySubjectInWeek(selectedWeek);const totalLogged=Object.values(bySub).reduce((a,b)=>a+b,0);const civilPct=totalLogged?pct(bySub.Civil,totalLogged):0;let alert='';if(totalLogged>0 && civilPct<50) alert=`<div class="notice dangerbox" style="margin-top:10px"><b>Alerta:</b> Civil lleva ${civilPct}% de las horas registradas esta semana. Meta sugerida: mínimo 50%.</div>`;document.getElementById('dailyIndicators').innerHTML=`<div class="toolbar"><span class="pill ${st.p>=80?'done':'Base'}">Temas: ${st.done}/${st.total} · ${st.p}%</span><span class="pill">Horas reales: ${h.toFixed(1)} h</span><span class="pill">Horas planificadas: ${planned.toFixed(1)} h</span><span class="pill Civil">Civil real: ${civilPct}%</span></div><div class="progress" style="margin-top:8px"><div class="bar" style="width:${st.p}%"></div></div>${alert}`;document.getElementById('dailyPlanGrid').innerHTML=DAYS.map((_,idx)=>dayCard(selectedWeek,idx)).join('');}
 function dayCard(week,idx){const date=dateFor(week,idx);const dayName=DAYS[idx];const tasks=dayTasks(week,idx);const subject=tasks[0]?.subject || (idx===6?'Descanso':'');const hours=tasks.reduce((s,t)=>s+Number(t.hours||0),0);const title=idx===6?'Descanso o recuperación liviana':(tasks[0]?.sessionType||'Sesión');const actions=idx===6?'':`<button class="mini secondary" onclick="advanceForDay(${week},${idx},'${subject}')">Adelantar tema</button><button class="mini secondary" onclick="fillLogFromDay(${week},${idx})">Registrar horas</button>`;return `<div class="day-card"><div class="day-head ${subject||'Descanso'}"><div><div class="day-title">${dayName} <span class="day-date">${longDate(date)}</span></div><div class="task-meta"><span class="pill ${subject}">${subject||'Descanso'}</span><span class="pill">${title}</span><span class="pill">${hours?hours+' h':'0 h'}</span></div></div><div class="day-actions no-print">${actions}</div></div><div class="day-body">${tasks.length?tasks.map(taskHTML).join(''):`<div class="empty">Domingo libre. Si tienes arrastres críticos, usa 30 a 45 minutos de fichas, no estudio pesado.</div>`}</div></div>`}
-function taskHTML(task){const status=statusOf(task.id);const done=status==='Cumplido';const move=state.moves[task.id];const moved=`${move?`<span class="pill ${move.kind==='adelantado'?'Adelantado':'Arrastre'}">${move.kind==='adelantado'?'Adelantado':'Arrastre/Postergado'}</span>`:''}`;return `<div class="task ${done?'done':''}" data-task="${task.id}"><input type="checkbox" ${done?'checked':''} onchange="toggleTask('${task.id}',this.checked)"><div><div class="task-title">${esc(task.title)}</div><div class="task-meta"><span class="pill ${task.subject}">${task.subject}</span><span class="pill ${task.priority}">${task.priority}</span><span class="pill">Semana ${task.week}</span><span class="pill">${task.day}</span><span class="pill">${task.hours||0} h</span><span class="pill ${status}">${status}</span>${moved}</div><details class="task-more"><summary>Detalle y resultado esperado</summary><div class="task-detail">${esc(task.detail)}</div><div class="task-output"><b>Resultado esperado:</b> ${esc(task.output)}</div></details><div class="task-actions no-print"><select style="max-width:170px" onchange="setTaskStatus('${task.id}',this.value)"><option ${status==='Pendiente'?'selected':''}>Pendiente</option><option ${status==='Parcial'?'selected':''}>Parcial</option><option ${status==='Cumplido'?'selected':''}>Cumplido</option></select><button class="mini secondary" onclick="postponeTask('${task.id}')">Postergar</button>${move?`<button class="mini secondary" onclick="undoMove('${task.id}')">Deshacer movimiento</button>`:''}${task.builtin?'':`<button class="mini secondary" onclick="deleteCustomTask('${task.id}')">Eliminar</button>`}</div></div><div class="side-actions"></div></div>`}
+function taskHTML(task){
+  const status=statusOf(task.id);
+  const done=status==='Cumplido';
+  const move=state.moves[task.id];
+  const moved=`${move?`<span class="pill ${move.kind==='adelantado'?'Adelantado':'Arrastre'}">${move.kind==='adelantado'?'Adelantado':'Arrastre/Postergado'}</span>`:''}`;
+  const customLink = state.driveLinks && state.driveLinks[task.id];
+  const driveUrl = customLink || `https://drive.google.com/drive/search?q=parent:1erJXCMyFt0pLtDh_QWyJM86rJYxQ48eb%20"${encodeURIComponent(task.title)}"`;
+  const minuta = getMinutaForTask(task);
+  let minutaBlock = '';
+  if(minuta) {
+    minutaBlock = `
+      <details style="margin-top:10px;border:1px solid rgba(59,91,181,0.25);border-radius:10px;background:#fcfdfe;padding:10px;">
+        <summary style="cursor:pointer;font-weight:700;color:var(--primary);font-size:0.92rem;">📝 Ver Minuta de Respuesta</summary>
+        <div style="margin-top:6px;font-size:0.88rem;line-height:1.45;color:#344054;">
+          <p><strong>Concepto clave:</strong> ${esc(minuta.concept)}</p>
+          <p><strong>Artículos fundamentales:</strong> <span class="pill">${esc(minuta.articles)}</span></p>
+          <strong>Esquema de respuesta exigido:</strong>
+          <ul style="margin:4px 0;padding-left:18px;">
+            ${minuta.schema.map(x => `<li>${esc(x)}</li>`).join('')}
+          </ul>
+          <p style="margin-top:6px;color:#b42318;font-size:0.85rem;background:#fff1f3;padding:5px;border:1px solid #fecdca;border-radius:6px;">
+            ⚠️ <strong>Trampa de examen:</strong> ${esc(minuta.pitfalls)}
+          </p>
+        </div>
+      </details>
+    `;
+  }
+  return `<div class="task ${done?'done':''}" data-task="${task.id}"><input type="checkbox" ${done?'checked':''} onchange="toggleTask('${task.id}',this.checked)"><div><div class="task-title">${esc(task.title)}</div><div class="task-meta"><span class="pill ${task.subject}">${task.subject}</span><span class="pill ${task.priority}">${task.priority}</span><span class="pill">Semana ${task.week}</span><span class="pill">${task.day}</span><span class="pill">${task.hours||0} h</span><span class="pill ${status}">${status}</span>${moved}</div><details class="task-more"><summary>Detalle y resultado esperado</summary><div class="task-detail">${esc(task.detail)}</div><div class="task-output"><b>Resultado esperado:</b> ${esc(task.output)}</div><div style="margin-top:10px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; border-top:1px solid var(--line); padding-top:8px;"><a href="${driveUrl}" target="_blank" class="drive-btn">📂 Material de Estudio</a><div style="display:inline-flex; gap:6px; align-items:center;"><input type="text" id="drive-input-${task.id}" value="${esc(customLink || '')}" placeholder="Pegar URL de Drive..." style="padding:4px 8px; font-size:0.8rem; border-radius:6px; width:150px; height:26px; border:1px solid var(--line);"><button class="mini" onclick="saveDriveLink('${task.id}')" style="padding:4px 8px; height:26px; border-radius:6px; line-height:1; font-size:0.75rem;">Guardar Link</button></div></div>${minutaBlock}</details><div class="task-actions no-print"><select style="max-width:170px" onchange="setTaskStatus('${task.id}',this.value)"><option ${status==='Pendiente'?'selected':''}>Pendiente</option><option ${status==='Parcial'?'selected':''}>Parcial</option><option ${status==='Cumplido'?'selected':''}>Cumplido</option></select><button class="mini secondary" onclick="postponeTask('${task.id}')">Postergar</button>${move?`<button class="mini secondary" onclick="undoMove('${task.id}')">Deshacer movimiento</button>`:''}${task.builtin?'':`<button class="mini secondary" onclick="deleteCustomTask('${task.id}')">Eliminar</button>`}</div></div><div class="side-actions"></div></div>`}
+function saveDriveLink(taskId){
+  const input = document.getElementById(`drive-input-${taskId}`);
+  if(!input) return;
+  const val = input.value.trim();
+  if(!state.driveLinks) state.driveLinks = {};
+  if(val){
+    state.driveLinks[taskId] = val;
+  } else {
+    delete state.driveLinks[taskId];
+  }
+  save();
+  showProtectionNotice('Enlace de Drive guardado con éxito.');
+}
+
+function renderFichas(){
+  const sub = document.getElementById('fichasSubjectFilter')?.value || '';
+  const q = (document.getElementById('fichasSearchInput')?.value || '').toLowerCase();
+  const grid = document.getElementById('fichasGrid');
+  if(!grid) return;
+  let html = '';
+  let count = 0;
+  for (const k in STUDY_MINUTAS) {
+    const min = STUDY_MINUTAS[k];
+    const subject = min.subject || 'Civil';
+    if(sub && subject !== sub) continue;
+    const textToSearch = `${min.topic} ${min.question} ${min.concept} ${min.articles} ${min.schema.join(' ')}`.toLowerCase();
+    if(q && !textToSearch.includes(q)) continue;
+    count++;
+    html += `
+      <div class="card" style="border:1px solid var(--line); border-radius:16px; padding:15px; background:#fff; display:flex; flex-direction:column; justify-content:space-between; box-shadow:none;">
+        <div>
+          <div class="toolbar" style="margin-bottom:8px;">
+            <span class="pill ${subject}">${subject}</span>
+            <span class="spacer"></span>
+            <span class="pill Base">${min.articles.split(';')[0]}</span>
+          </div>
+          <h3 style="margin:0 0 6px 0; font-size:1.1rem; color:var(--primary);">${esc(min.topic)}</h3>
+          <p style="font-weight:700; margin-bottom:10px; font-size:0.95rem; color:#344054;">${esc(min.question)}</p>
+          <details style="border-top:1px solid var(--line); padding-top:10px; margin-top:8px;">
+            <summary style="cursor:pointer; font-weight:750; color:var(--primary2); font-size:0.9rem;">👁️ Revelar Minuta de Respuesta</summary>
+            <div style="margin-top:8px; font-size:0.87rem; line-height:1.45;">
+              <p><strong>Concepto:</strong> ${esc(min.concept)}</p>
+              <p><strong>Artículos clave:</strong> <span class="pill">${esc(min.articles)}</span></p>
+              <strong>Esquema de respuesta exigido:</strong>
+              <ul style="margin:4px 0; padding-left:18px;">
+                ${min.schema.map(x=>`<li>${esc(x)}</li>`).join('')}
+              </ul>
+              <p style="margin-top:8px; color:#b42318; background:#fff1f3; padding:6px; border-radius:6px; border:1px solid #fecdca;">
+                ⚠️ <strong>Trampa de examen:</strong> ${esc(min.pitfalls)}
+              </p>
+            </div>
+          </details>
+        </div>
+      </div>
+    `;
+  }
+  if(count === 0){
+    grid.innerHTML = '<div class="empty" style="grid-column:1/-1;">No se encontraron fichas que coincidan con los filtros.</div>';
+  } else {
+    grid.innerHTML = html;
+  }
+}
+
 function toggleTask(id,val){state.checked[id]=!!val;state.taskStatus[id]=val?'Cumplido':'Pendiente'; save();}
 function setTaskStatus(id,status){state.taskStatus[id]=status;state.checked[id]=status==='Cumplido';save();}
 function markWeekVisible(val){const tasks=weekTasks(selectedWeek);if(!confirm(`${val?'Marcar como cumplidas':'Desmarcar'} ${tasks.length} tareas de la semana ${selectedWeek}?`)) return;tasks.forEach(x=>{state.checked[x.id]=val; state.taskStatus[x.id]=val?'Cumplido':'Pendiente';}); save();}
@@ -1279,7 +1807,46 @@ function saveLog(){const log={id:Date.now(),date:document.getElementById('logDat
 function renderLogs(){if(!document.getElementById('logDate').value) document.getElementById('logDate').value=iso(new Date()); const summaries=PLAN.map(w=>{const h=hoursInWeek(w.week);const target=state.reviews[w.week]?.target||state.settings.hoursTarget;const p=Math.min(100,Math.round(h*100/target));const by=hoursBySubjectInWeek(w.week);const total=Object.values(by).reduce((a,b)=>a+b,0);const civil=total?pct(by.Civil,total):0; return `<div style="margin-bottom:12px"><div class="toolbar"><b>Semana ${w.week}</b><span class="spacer"></span><span class="small muted">${h.toFixed(1)} / ${target} h · Civil ${civil}%</span></div><div class="progress"><div class="bar" style="width:${p}%"></div></div></div>`}).join('');document.getElementById('weeklyHours').innerHTML=summaries; if(!state.logs.length){document.getElementById('logTable').innerHTML='<div class="empty">Todavía no hay registros diarios.</div>';return} document.getElementById('logTable').innerHTML=`<table><thead><tr><th>Fecha</th><th>Horas</th><th>Conf.</th><th>Temas</th><th>Notas</th><th></th></tr></thead><tbody>${state.logs.map(l=>`<tr><td>${l.date}</td><td>Civ ${l.Civil||0} · Proc ${l.Procesal||0} · Const ${l.Constitucional||0} · Oral ${l.Oralidad||0}</td><td>${l.confidence||''}</td><td>${esc(l.topics||'')}</td><td>${esc(l.notes||'')}</td><td><button class="secondary mini" onclick="deleteLog(${l.id})">Eliminar</button></td></tr>`).join('')}</tbody></table>`}
 function deleteLog(id){if(confirm('¿Eliminar registro diario?')){state.logs=state.logs.filter(l=>l.id!==id);save();}}
 function questions(){return allTasks().filter(x=>x.subject!=='Oralidad').map(x=>({task:x,q:`Explique ${x.title}: concepto, elementos o requisitos, efectos y una diferencia relevante.`,subject:x.subject,priority:x.priority,week:x.week,status:statusOf(x.id)}))}
-function drawQuestion(){let qs=questions();const scope=document.getElementById('oralScope').value;const subj=document.getElementById('oralSubject').value;if(scope==='current') qs=qs.filter(x=>x.week==selectedWeek);if(scope==='weak') qs=qs.filter(x=>['Alta','Crítica'].includes(x.priority));if(scope==='pending') qs=qs.filter(x=>x.status!=='Cumplido');if(subj) qs=qs.filter(x=>x.subject===subj);if(!qs.length) return alert('No hay preguntas en ese filtro.');currentQuestion=qs[Math.floor(Math.random()*qs.length)];document.getElementById('questionBox').innerHTML=`<span class="pill ${currentQuestion.subject}">${currentQuestion.subject}</span> <span class="pill">Semana ${currentQuestion.week}</span><br>${esc(currentQuestion.q)}`; resetTimer();}
+function drawQuestion(){
+  let qs=questions();
+  const scope=document.getElementById('oralScope').value;
+  const subj=document.getElementById('oralSubject').value;
+  if(scope==='current') qs=qs.filter(x=>x.week==selectedWeek);
+  if(scope==='weak') qs=qs.filter(x=>['Alta','Crítica'].includes(x.priority));
+  if(scope==='pending') qs=qs.filter(x=>x.status!=='Cumplido');
+  if(subj) qs=qs.filter(x=>x.subject===subj);
+  if(!qs.length) return alert('No hay preguntas en ese filtro.');
+  currentQuestion=qs[Math.floor(Math.random()*qs.length)];
+  const min = getMinutaForTask(currentQuestion.task);
+  const questionText = min ? min.question : currentQuestion.q;
+  currentQuestion.q = questionText;
+  let minutaHtml = '';
+  if (min) {
+    minutaHtml = `
+      <details style="margin-top:12px; font-size:0.9rem; border-top:1px solid #d8e0ff; padding-top:10px;">
+        <summary style="cursor:pointer; font-weight:700; color:var(--primary2);">👁️ Ver Minuta de Respuesta Sugerida</summary>
+        <div style="margin-top:8px; font-weight:normal; text-align:left; line-height:1.45;">
+          <p><strong>Concepto:</strong> ${esc(min.concept)}</p>
+          <p><strong>Artículos fundamentales:</strong> <span class="pill">${esc(min.articles)}</span></p>
+          <strong>Esquema exigido:</strong>
+          <ul style="margin:4px 0; padding-left:18px;">
+            ${min.schema.map(x=>`<li>${esc(x)}</li>`).join('')}
+          </ul>
+          <p style="margin-top:6px; color:#b42318; font-size:0.85rem; background:#fff1f3; padding:5px; border:1px solid #fecdca; border-radius:6px;">⚠️ <strong>Trampa común:</strong> ${esc(min.pitfalls)}</p>
+        </div>
+      </details>
+    `;
+  }
+  document.getElementById('questionBox').innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <span class="pill ${currentQuestion.subject}">${currentQuestion.subject}</span> 
+      <span class="pill">Semana ${currentQuestion.week}</span>
+    </div>
+    <div style="font-weight:900; margin-bottom:8px; font-size:1.15rem;">${esc(questionText)}</div>
+    ${minutaHtml}
+  `; 
+  resetTimer();
+}
 function startTimer(sec){if(sec) remaining=sec; clearInterval(timerId); timerId=setInterval(()=>{remaining--; updateTimer(); if(remaining<=0){clearInterval(timerId);alert('Tiempo cumplido. Cierra la respuesta en 30 segundos.')}},1000)}
 function pauseTimer(){clearInterval(timerId)}
 function resetTimer(){clearInterval(timerId);remaining=300;updateTimer()}
